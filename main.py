@@ -43,8 +43,9 @@ def save_spend_invest(
     net_worth.deposit_to_brokerage(cash_flow.investment_brokerage)
     current_month_income -= cash_flow.investment_brokerage
 
-    # TODO: update this to own 'budget' function which applies correct
-    #   amount of expenses to decrease debt value.
+    net_worth.submit_debt_payment_to_total(cash_flow.debt_payments)
+    current_month_income -= cash_flow.debt_payments
+
     current_month_income -= cash_flow.expenses
     current_month_income -= cash_flow.shortterm_savings
 
@@ -80,7 +81,10 @@ def initialize_monthly_cashflow() -> CashFlow:
     paycheck = 2500
     retirement_contribution = 410
     roth_contribution = 250
-    monthly_expenses = 3500
+
+    monthly_expenses = 3150
+    car_payment = 250
+    student_loan = 100
 
     # according to rocketmoney budget, i typically have 650
     # to play with after roth, retirement, and expenses for a paycheck
@@ -94,6 +98,7 @@ def initialize_monthly_cashflow() -> CashFlow:
         expenses=monthly_expenses,
         investment_brokerage=investments,
         shortterm_savings=savings,
+        debt_payments=car_payment + student_loan,
     )
 
 

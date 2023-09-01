@@ -32,6 +32,7 @@ class CashFlow:
 
     # expenditure
     expenses: int
+    debt_payments: int = 0
     shortterm_savings: int = 0
 
     # saving + investing
