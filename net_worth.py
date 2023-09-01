@@ -1,0 +1,88 @@
+from dataclasses import dataclass
+import logging
+
+
+@dataclass
+class NetWorth:
+    cash: dict[str, int]
+    retirement: dict[str, int]
+    brokerage: int
+    crypto: int
+    debt: dict[str, int]
+
+    def get_total(self) -> int:
+        """sum assets and subtract liabilities"""
+        asset_type = [self.cash, self.retirement, self.brokerage, self.crypto]
+        assets = sum(
+            (sum(a.values()) if isinstance(a, dict) else a for a in asset_type)
+        )
+        liabilities = sum(self.debt.values())
+
+        return assets - liabilities
+
+    def accrue_savings_interest(self, APY=4.50):
+        """apply 1 month of APY to cash.savings"""
+        savings = self.cash["savings"]
+        interest_earned = round((APY / 12) * savings)
+        self.cash["savings"] = savings + interest_earned
+        logging.info(
+            "accrued $%d interest on savings. updated savings to $%d",
+            interest_earned,
+            savings,
+        )
+
+    def grow_investments(self, annual_rate=8.00):
+        """apply 1 month of annual growth factor to retirement and brokerage"""
+        for account, value in self.retirement.items():
+            growth = round((annual_rate / 12) * value)
+            new_value = value + growth
+            self.retirement[account] = new_value
+            logging.info(
+                "investment in %s grew by $%d. updated value to %d",
+                account,
+                growth,
+                new_value,
+            )
+
+        brokerage_growth = round((annual_rate / 12) * self.brokerage)
+        new_brokerage_value = self.brokerage + brokerage_growth
+        logging.info(
+            "investment in brokerage grew by $%d. updated value to %d",
+            brokerage_growth,
+            new_brokerage_value,
+        )
+
+    def update_debt_balance(self, total_payment, APR=6.0) -> None:
+        total_debt = sum(value for debt, value in self.debt if debt != "total")
+        logging.debug(f"previous total debt balance: ${total_debt}")
+
+        total_debt -= total_payment
+        logging.info(f"applied payments of ${total_payment}")
+
+        monthly_interest = round((APR / 12) * total_debt)
+        total_debt += monthly_interest
+
+        self.debt.update({"total": total_debt})
+        logging.debug(
+            f"applied ${monthly_interest} of interest. new total=${total_debt}"
+        )
+
+    def deposit_to_savings(self, amount):
+        """increase cash.savings by given amount"""
+        self.cash["savings"] += amount
+        logging.debug(f"deposited ${amount} in savings. new balance: ${self.cash['savings']}")
+
+    def deposit_to_checking(self, amount):
+        """increase cash.checking by given amount"""
+        self.cash["checking"] += amount
+        logging.debug(f"deposited ${amount} in checking. new balance: ${self.cash['checking']}")
+    
+    def contribute_to_401k(self, amount):
+        """increase retirement['401k'] by given amount"""
+        self.retirement["401k"] += amount
+        logging.debug(f"deposited ${amount} in 401k. new balance: ${self.retirement['401k']}")
+    
+    def contribute_to_roth_ira(self, amount):
+        """increase retirement['Roth IRA'] by given amount"""
+        self.retirement["Roth IRA"] += amount
+        logging.debug(f"deposited ${amount} in Roth IRA. new balance: ${self.retirement['Roth IRA']}")
