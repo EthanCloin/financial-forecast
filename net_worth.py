@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import logging
+from debt import Debt
 
 
 @dataclass
@@ -8,14 +9,14 @@ class NetWorth:
     retirement: dict[str, int]
     brokerage: int
     crypto: int
-    debt: dict[str, int]
+    debts: list[Debt]
 
-    def __post_init__(self):
-        # simplify debt calc by consolidating into total
-        if self.debt.get("total", None) is None:
-            total_debt = sum(self.debt.values())
-            logging.debug(f"total debt: {total_debt}")
-            self.debt.update({"total": total_debt})
+    # def __post_init__(self):
+    #     # simplify debt calc by consolidating into total
+    #     if self.debts.get("total", None) is None:
+    #         total_debt = sum(self.debts.values())
+    #         logging.debug(f"total debt: {total_debt}")
+    #         self.debts.update({"total": total_debt})
 
     def shallow_clone(self):
         return NetWorth(
@@ -23,7 +24,7 @@ class NetWorth:
             retirement=self.retirement,
             brokerage=self.brokerage,
             crypto=self.crypto,
-            debt=self.debt,
+            debts=self.debts,
         )
 
     def get_total(self) -> int:
@@ -32,7 +33,7 @@ class NetWorth:
         assets = sum(
             (sum(a.values()) if isinstance(a, dict) else a for a in asset_type)
         )
-        liabilities = self.debt.get("total")
+        liabilities = sum(d.current_balance for d in self.debts)
 
         return assets - liabilities
 
@@ -70,25 +71,29 @@ class NetWorth:
             new_brokerage_value,
         )
 
-    def submit_debt_payment_to_total(self, total_payment, APR=6.0) -> None:
-        # TODO: utilize numpy-financial to perform proper calculations of
-        #   interest, monthly payments, etc.
+    def submit_debt_payment(self, title: str):
+        # self.debts.
+        pass
 
-        APR = APR / 100  # convert from percentage
+    # def submit_debt_payment_to_total(self, total_payment, APR=6.0) -> None:
+    #     # TODO: utilize numpy-financial to perform proper calculations of
+    #     #   interest, monthly payments, etc.
 
-        total_debt = self.debt.get("total")
-        logging.debug(
-            f"applied payments of ${total_payment} to existing debt of ${total_debt}"
-        )
-        total_debt -= total_payment
+    #     APR = APR / 100  # convert from percentage
 
-        monthly_interest = round((APR / 12) * total_debt)
-        total_debt += monthly_interest
-        logging.debug(
-            f"applied ${monthly_interest} of interest. new total=${total_debt}"
-        )
+    #     total_debt = self.debts.get("total")
+    #     logging.debug(
+    #         f"applied payments of ${total_payment} to existing debt of ${total_debt}"
+    #     )
+    #     total_debt -= total_payment
 
-        self.debt.update({"total": total_debt})
+    #     monthly_interest = round((APR / 12) * total_debt)
+    #     total_debt += monthly_interest
+    #     logging.debug(
+    #         f"applied ${monthly_interest} of interest. new total=${total_debt}"
+    #     )
+
+    #     self.debts.update({"total": total_debt})
 
     def deposit_to_brokerage(self, amount):
         """increase brokerage by given amount"""

@@ -7,6 +7,20 @@ from cash_flow import CashFlow
 logging.basicConfig(level=logging.DEBUG)
 
 
+def test_debt():
+    from debt import Debt
+
+    student_loan = Debt("Student Loan", 650000, 0.0275, 10)
+    # student_loan = Debt("Student Loan", 2000000, 0.05, 10)
+    for _ in range(0, 125):
+        try:
+            student_loan.make_min_monthly_payment()
+        except Exception as err:
+            logging.warning(err)
+            pass
+    print(student_loan)
+
+
 def main():
     net_worth = initialize_net_worth()
     cash_flow = initialize_monthly_cashflow()
@@ -73,7 +87,7 @@ def initialize_net_worth() -> NetWorth:
     }
 
     return NetWorth(
-        cash=cash, retirement=retirement, crypto=crypto, brokerage=brokerage, debt=debt
+        cash=cash, retirement=retirement, crypto=crypto, brokerage=brokerage, debts=debt
     )
 
 
@@ -134,4 +148,5 @@ def simulate_month(net_worth: NetWorth, cash_flow: CashFlow) -> NetWorth:
 
 
 if __name__ == "__main__":
-    main()
+    # main()
+    test_debt()
