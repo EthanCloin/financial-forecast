@@ -10,15 +10,17 @@ logging.basicConfig(level=logging.DEBUG)
 def test_debt():
     from debt import Debt
 
-    student_loan = Debt("Student Loan", 650000, 0.0275, 10)
+    # student_loan = Debt("Student Loan", 650000, 0.0275, 10)
     # student_loan = Debt("Student Loan", 2000000, 0.05, 10)
+
+    car_loan = Debt("Auto Loan", 1400000, 0.05, 3)
     for _ in range(0, 125):
         try:
-            student_loan.make_min_monthly_payment()
+            car_loan.make_min_monthly_payment()
         except Exception as err:
             logging.warning(err)
             pass
-    print(student_loan)
+    print(car_loan)
 
 
 def main():
@@ -29,7 +31,7 @@ def main():
     pprint(after_a_month)
 
 
-def apply_passive_growth(net_worth: NetWorth, cash_flow: CashFlow) -> NetWorth:
+def apply_passive_growth(net_worth: NetWorth) -> NetWorth:
     net_worth.accrue_savings_interest()
     net_worth.grow_investments()
     return net_worth
