@@ -1,7 +1,8 @@
 import logging
 from pprint import pprint
+from debt import Debt
 from net_worth import NetWorth
-from cash_flow import CashFlow
+from cash_flow import CashFlow, MonthlyCashFlow
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -147,6 +148,39 @@ def simulate_month(net_worth: NetWorth, cash_flow: CashFlow) -> NetWorth:
     net_worth.deposit_to_checking(current_monthly_income)
     print(f"updated net worth: {net_worth.get_total()}")
     return net_worth
+
+
+def simulate_month2(net_worth: NetWorth, cash_flow: MonthlyCashFlow):
+    pass
+
+
+def get_user_net_worth() -> NetWorth:
+    return NetWorth(
+        cash={
+            "checking": 240000,
+            "saving": 500000,
+        },
+        retirement={
+            "IRA": 2000000,
+            "401k": 2500000,
+        },
+        brokerage=0,
+        crypto=0,
+        debts=[
+            Debt(
+                title="Auto Loan",
+                principal=3000000,
+                APR=0.06,
+                term_years=4,
+            ),
+            Debt(
+                title="Mortgage",
+                principal=45000000,
+                APR=0.04,
+                term_years=30,
+            ),
+        ],
+    )
 
 
 if __name__ == "__main__":

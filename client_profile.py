@@ -1,5 +1,5 @@
 from net_worth import NetWorth
-from cash_flow import CashFlow
+from cash_flow import CashFlow, CashFlowMonthly
 from debt import Debt
 from dataclasses import dataclass
 
@@ -39,5 +39,5 @@ JOHN_THE_BUTCHER = ClientProfile(
             ),
         ],
     ),
-    cash_flow=CashFlow(paycheck=2300, expenses=3000),
+    cash_flow=CashFlowMonthly,
 )

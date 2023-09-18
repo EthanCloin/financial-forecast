@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+from debt import Debt
+from investment import Investment, Roth401kContribution
 import logging
 
 
@@ -79,41 +81,36 @@ class CashFlowAnnual:
 
 
 @dataclass
-class CashFlowMonthly:
-    gross_income: int
-    net_income: int
-    income_taxes: int
-    retirement_contribution: int
+class MonthlyCashFlow:
+    """ """
 
-    @staticmethod
-    def from_annual(annual: CashFlowAnnual):
-        net_income, taxes, retirement = CashFlowMonthly.get_monthly_paydata(annual)
-        return CashFlowMonthly(
-            gross_income=round((annual.salary_dollars / 12) * 100, 2),
-            net_income=net_income,
-            income_taxes=taxes,
-            retirement_contribution=retirement,
+    net_income_dollars: float
+
+    living_expenses: int
+
+    debts: list[Debt]
+    investments: list[Investment]
+    # maybe later add a list of expenses / budget object
+
+    # calculated fields
+    net_income: int = 0
+    discretionary_income: int = 0
+
+    def __post_init__(self):
+        self.net_income = round(self.net_income * 100)
+        self.discretionary_income = self.get_discretionary_income()
+
+    def get_total_debt_obligation(self) -> int:
+        return sum(
+            d.calculate_monthly_payment() for d in self.debts if d.remaining_balance > 0
         )
 
-    @staticmethod
-    def get_monthly_paydata(annual: CashFlowAnnual) -> tuple[int, int, int]:
-        if annual.payroll_schedule != "semimonthly":
-            raise NotImplementedError("only supporting semimonthly schedule rn")
+    def get_discretionary_income(self) -> int:
+        discretionary_income = (
+            self.net_income - self.living_expenses - self.get_total_debt_obligation()
+        )
 
-        # TODO: here we would use a lookup for other payroll schedules
-        #   or maybe create separate entity for payroll
-        checks_per_month = 2
-
-        pretax_paycheck = round((annual.salary_dollars / 12) / 2, 2)
-        # TODO: here is where we would fork logic for Roth v Traditional
-        taxes_witheld = pretax_paycheck * annual.income_tax_rate
-        retirement_contribution = round(annual.company_retirement_contribution / 12, 2)
-        net_pay = (
-            pretax_paycheck - taxes_witheld - retirement_contribution
-        ) * checks_per_month
-
-        net_pay_cents = round(net_pay * 100)
-        income_tax_cents = round(taxes_witheld * 100)
-        retirement_cents = round(retirement_cents * 100)
-
-        return net_pay_cents, income_tax_cents, retirement_cents
+        if discretionary_income < 0:
+            raise ValueError("Budget not possible! Spending exceeds income")
+        else:
+            return discretionary_income

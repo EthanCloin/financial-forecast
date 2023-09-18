@@ -33,7 +33,7 @@ class Debt:
         if self.min_monthly_payment == 0:
             self.min_monthly_payment = self.calculate_monthly_payment()
 
-    def calculate_monthly_payment(self):
+    def calculate_monthly_payment(self) -> int:
         """use numpy-financial to calculate minimum monthly payment in cents"""
 
         monthly_payment = npf.pmt(
