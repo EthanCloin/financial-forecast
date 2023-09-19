@@ -8,8 +8,7 @@ from pprint import pprint
 def main():
     GOAL_DOLLARS = 100000
     net_worth = get_net_worth()
-    pprint(net_worth)
-    # income = get_income()
+    income = get_income()
     # spending = get_spending(net_worth["debts"], income["net_monthly"])
     # action_plan = build_action_plan(income, spending, net_worth)
 
@@ -57,9 +56,18 @@ def get_net_worth():
 
 def get_income():
     # Gross Annual
+    gross_annual = 7500000
     # Retirement Contribution
+    contribution_401k = 0.08
     # Net Monthly
-    pass
+    net_monthly = 480000
+
+    income = {
+        "gross_annual": gross_annual,
+        "monthly_401k_contribution": round((contribution_401k * gross_annual) / 12),
+        "net_monthly": net_monthly,
+    }
+    return income
 
 
 def get_spending(debts, net_monthly_income):
