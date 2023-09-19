@@ -2,30 +2,57 @@
 script form of financial forecaster.
 to force simplicity, do not utilize any OOP
 """
+from pprint import pprint
 
 
 def main():
     GOAL_DOLLARS = 100000
     net_worth = get_net_worth()
-    income = get_income()
-    spending = get_spending(net_worth["debts"], income["net_monthly"])
-    action_plan = build_action_plan(income, spending, net_worth)
+    pprint(net_worth)
+    # income = get_income()
+    # spending = get_spending(net_worth["debts"], income["net_monthly"])
+    # action_plan = build_action_plan(income, spending, net_worth)
 
-    months = 0
-    while net_worth["total_dollars"] < GOAL_DOLLARS:
-        new_net_worth = execute_action_plan(net_worth, action_plan)
-        net_worth = new_net_worth
-        months += 1
+    # months = 0
+    # while net_worth["total_dollars"] < GOAL_DOLLARS:
+    #     new_net_worth = execute_action_plan(net_worth, action_plan)
+    #     net_worth = new_net_worth
+    #     months += 1
 
     pass
 
 
 def get_net_worth():
     # Banking
+    checking = 200000
+    savings = 1000000
+    banking = {"balance": checking + savings}
+
     # Retirement
+    company_401k = 500000
+    roth_ira = 1200000
+    retirement = {"balance": company_401k + roth_ira}
+
     # Investment
+    investment = {"balance": 200000}
+
     # Debt
-    pass
+    car_loan = {"balance": 1618428, "monthly_payment": 44956}
+    student_loan = {"balance": 753174, "monthly_payment": 6276}
+    debt = {
+        "balance": sum([car_loan.get("balance"), student_loan.get("balance")]),
+        "monthly_payment": sum(
+            [car_loan.get("monthly_payment"), student_loan.get("monthly_payment")]
+        ),
+    }
+
+    net_worth = {
+        "banking": banking,
+        "retirement": retirement,
+        "investment": investment,
+        "debt": debt,
+    }
+    return net_worth
 
 
 def get_income():
@@ -75,5 +102,4 @@ def execute_action_plan(net_worth, action_plan):
 
 
 if __name__ == "__main__":
-    print("Hello World!")
     main()
