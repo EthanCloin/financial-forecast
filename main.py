@@ -9,7 +9,8 @@ def main():
     GOAL_DOLLARS = 100000
     net_worth = get_net_worth()
     income = get_income()
-    # spending = get_spending(net_worth["debts"], income["net_monthly"])
+    spending = get_spending(net_worth.get("debt"), income.get("net_monthly"))
+    pprint(spending)
     # action_plan = build_action_plan(income, spending, net_worth)
 
     # months = 0
@@ -38,12 +39,19 @@ def get_net_worth():
     # Debt
     car_loan = {"balance": 1618428, "monthly_payment": 44956}
     student_loan = {"balance": 753174, "monthly_payment": 6276}
-    debt = {
-        "balance": sum([car_loan.get("balance"), student_loan.get("balance")]),
-        "monthly_payment": sum(
-            [car_loan.get("monthly_payment"), student_loan.get("monthly_payment")]
-        ),
+
+    credit_cards = {
+        "balance": 200000,
+        "monthly_payment": 20000,
+        "is_high_interest": True,
     }
+
+    # NOTE: Currently combining minimum monthlypayment
+    debt = [
+        car_loan,
+        student_loan,
+        credit_cards,
+    ]
 
     net_worth = {
         "banking": banking,
@@ -70,13 +78,27 @@ def get_income():
     return income
 
 
-def get_spending(debts, net_monthly_income):
+def get_spending(debt, net_monthly_income):
     # Minimum Debt Payments
+    debt_obligations = sum(d.get("monthly_payment") for d in debt)
+
     # Housing
+    housing = 200000
     # Groceries
+    groceries = 40000
     # Frivolous Spending (dining, subscriptions, etc)
+    bullshit = 150000
     # Available for Saving (net monthly - above)
-    pass
+    available_savings = net_monthly_income - (housing + groceries + bullshit)
+
+    spending_profile = {
+        "debt_obligations": debt_obligations,
+        "living_expenses": housing + groceries,
+        "bullshit": bullshit,
+        "available_savings": available_savings,
+    }
+
+    return spending_profile
 
 
 def build_action_plan(net_monthly_income, monthly_spending, net_worth):
