@@ -1,12 +1,19 @@
 # Goal
 
-To determine how long a client will take to acheive a given financial goal
+Create a script which can create and execute a financial action plan.
 
-First, building a flow to accept current net worth and monthly cash flow info
-to determine how many months to reach a $100k net worth
+Main variables to build this plan are current Net Worth and Spending.
 
-## Cash Flow / Budget
+Action plan should execute and update net worth until the value reaches a given `GOAL_DOLLARS`
 
-Gross Income --> Taxes --> Company Retirement --> Net Income
+## V1
 
-Net Income --> Living Expenses --> Debt Payments --> Other Spending --> Savings --> Investments
+hardcoded variables and simple dictionaries to address my curiosity.
+
+> note: values used and saved to Git are either targeting averages in florida or spitballed
+
+## Possible Extensions
+
+Incorporate the action plan logic into an API or Lambda and build a frontend.
+
+Include logic to provide an alternative action plan to become debt-free.
