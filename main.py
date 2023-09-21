@@ -27,7 +27,7 @@ def get_net_worth():
     # Banking
     checking = {"name": "checking", "balance": 200000}
     savings = {"name": "savings", "balance": 800000}
-    emergency_fund = {"name": "emergency_fund", "balance": 800000}
+    emergency_fund = {"name": "emergency_fund", "balance": 200000}
     banking = [checking, savings, emergency_fund]
 
     # Retirement
@@ -61,7 +61,7 @@ def get_net_worth():
         car_loan,
         student_loan,
         credit_cards,
-        more_credit_cards,
+        # more_credit_cards,
     ]
 
     net_worth = {
@@ -157,6 +157,24 @@ def build_action_plan(income, spending, net_worth):
                 {"name": debt.get("name"), "payment": cur_balance}
             )
             available_savings -= cur_balance
+
+    # Priority Two: Save Emergency Fund (3mo)
+    emergency_goal = (
+        spending.get("living_expenses") + spending.get("debt_obligations") * 3
+    )
+    emergency_fund = next(
+        (a for a in net_worth.get("banking") if a.get("name") == "emergency_fund"), {}
+    )
+    emergency_balance = emergency_fund.get("balance")
+
+    if emergency_balance < emergency_goal:
+        remaining_to_goal = emergency_goal - emergency_balance
+        if remaining_to_goal >= available_savings:
+            action_plan.update({"emergency_fund_contribution": available_savings})
+            return action_plan
+        else:
+            action_plan.update({"emergency_fund_contribution": remaining_to_goal})
+            available_savings -= remaining_to_goal
 
     return action_plan
 
