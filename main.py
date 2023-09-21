@@ -3,7 +3,6 @@ script form of financial forecaster.
 to force simplicity, do not utilize any OOP
 """
 from pprint import pprint
-from re import match
 
 
 def main():
@@ -27,7 +26,7 @@ def get_net_worth():
     # Banking
     checking = {"name": "checking", "balance": 200000}
     savings = {"name": "savings", "balance": 800000}
-    emergency_fund = {"name": "emergency_fund", "balance": 200000}
+    emergency_fund = {"name": "emergency_fund", "balance": 1000000}
     banking = [checking, savings, emergency_fund]
 
     # Retirement
@@ -83,7 +82,8 @@ def get_income():
 
     income = {
         "gross_annual": gross_annual,
-        "monthly_401k_contribution": round((contribution_401k * gross_annual) / 12),
+        "401k_monthly_contribution": round((contribution_401k * gross_annual) / 12),
+        "401k_percent_contribution": contribution_401k,
         "net_monthly": net_monthly,
     }
     return income
@@ -125,7 +125,7 @@ def build_action_plan(income, spending, net_worth):
     """
 
     # super simple 100% match assuming provided value qualifies for max value.
-    match_with_401k = income.get("monthly_401k_contribution") * 2
+    match_with_401k = income.get("401k_monthly_contribution") * 2
 
     action_plan = {
         "available_income": 0,
@@ -175,6 +175,42 @@ def build_action_plan(income, spending, net_worth):
         else:
             action_plan.update({"emergency_fund_contribution": remaining_to_goal})
             available_savings -= remaining_to_goal
+
+    # Priority Three: Roth IRA
+    # simplify to say we can only contribute $500 / month to roth
+    # later consider tracking annual contribution and contribute until max
+    ira_contribution_limit = 50000
+    if ira_contribution_limit >= available_savings:
+        action_plan.update({"roth_ira_contribution": available_savings})
+        return action_plan
+    else:
+        action_plan.update({"roth_ira_contribution": ira_contribution_limit})
+        available_savings -= ira_contribution_limit
+
+    # Priority Four: Company 401k
+    # saying we can max contribute 25% gross income to 401k
+    additional_contribution_percent_limit = 0.25 - income.get(
+        "401k_percent_contribution"
+    )
+    contribution_limit_401k = round(
+        income.get("gross_annual") * additional_contribution_percent_limit
+    )
+    if contribution_limit_401k >= available_savings:
+        action_plan.update(
+            {
+                "401k_contribution": action_plan.get("401k_contribution")
+                + available_savings
+            }
+        )
+        return action_plan
+    else:
+        action_plan.update(
+            {
+                "401k_contribution": action_plan.get("401k_contribution")
+                + contribution_limit_401k
+            }
+        )
+        available_savings -= contribution_limit_401k
 
     return action_plan
 
