@@ -2,7 +2,10 @@
 script form of financial forecaster.
 to force simplicity, do not utilize any OOP
 """
-from pprint import pprint
+from pprint import pprint, pformat
+import logging
+
+logging.basicConfig(level="INFO")
 
 
 def main():
@@ -69,16 +72,19 @@ def get_net_worth():
         "investment": investment,
         "debt": debt,
     }
+
+    logging.info(f"generated net_worth: {pformat(net_worth)}")
+
     return net_worth
 
 
 def get_income():
     # Gross Annual
-    gross_annual = 7500000
+    gross_annual = 750000000
     # Retirement Contribution
     contribution_401k = 0.08
     # Net Monthly
-    net_monthly = 480000
+    net_monthly = 4800000000
 
     income = {
         "gross_annual": gross_annual,
@@ -86,6 +92,7 @@ def get_income():
         "401k_percent_contribution": contribution_401k,
         "net_monthly": net_monthly,
     }
+    logging.info(f"generated income: {pformat(income)}")
     return income
 
 
@@ -100,15 +107,15 @@ def get_spending(debt, net_monthly_income):
     # Frivolous Spending (dining, subscriptions, etc)
     bullshit = 150000
     # Available for Saving (net monthly - above)
-    available_savings = net_monthly_income - (housing + groceries + bullshit)
+    remaining_monthly_income = net_monthly_income - (housing + groceries + bullshit)
 
     spending_profile = {
         "debt_obligations": debt_obligations,
         "living_expenses": housing + groceries,
         "bullshit": bullshit,
-        "available_savings": available_savings,
+        "remaining_monthly_income": remaining_monthly_income,
     }
-
+    logging.info(f"generated spending profile: {pformat(spending_profile)}")
     return spending_profile
 
 
@@ -124,93 +131,182 @@ def build_action_plan(income, spending, net_worth):
         is there remaining available income ? contribute to brokerage
     """
 
-    # super simple 100% match assuming provided value qualifies for max value.
-    match_with_401k = income.get("401k_monthly_contribution") * 2
+    def add_401k_contribution(action_plan) -> None:
+        # super simple 100% match assuming provided value qualifies for max value.
+        matched_401k_contribution = income.get("401k_monthly_contribution") * 2
+        action_plan.update({"401k_contribution": matched_401k_contribution})
+
+    def add_debt_payments(
+        action_plan: dict, debts, remaining_monthly_income: int
+    ) -> int:
+        """
+        directly update action plan with amount of extra payments to high interest debts.
+
+        returns updated amount of remaining_monthly_income
+        """
+        high_interest_repayments: list[dict] = []
+        for debt in filter(lambda d: d.get("is_high_interest"), debts):
+            cur_balance = debt.get("balance")
+            can_payoff_balance = remaining_monthly_income >= cur_balance
+            if can_payoff_balance:
+                high_interest_repayments.append(
+                    {
+                        "name": debt.get("name"),
+                        "payment": cur_balance,
+                        "is_final_payment": True,
+                    }
+                )
+                remaining_monthly_income -= cur_balance
+                logging.info(f"paying off debt: {pformat(debt)}")
+            else:
+                high_interest_repayments.append(
+                    {"name": debt.get("name"), "payment": remaining_monthly_income}
+                )
+                remaining_monthly_income = 0
+                logging.info(
+                    f"remaining savings going to debt: {pformat(high_interest_repayments)}"
+                )
+                break
+
+        action_plan.update({"high_interest_debt_payments": high_interest_repayments})
+        return remaining_monthly_income
+
+    def add_emergency_fund_contribution(
+        action_plan: dict, remaining_monthly_income: int
+    ) -> int:
+        emergency_goal = (
+            spending.get("living_expenses") + spending.get("debt_obligations") * 3
+        )
+        emergency_fund = next(
+            (a for a in net_worth.get("banking") if a.get("name") == "emergency_fund"),
+            {},
+        )
+        emergency_balance = emergency_fund.get("balance")
+
+        emergency_fully_funded = emergency_balance >= emergency_goal
+        if emergency_fully_funded:
+            logging.debug("emergency fund is fully funded")
+            return remaining_monthly_income
+
+        emergency_fund_deficit = emergency_goal - emergency_balance
+        can_fully_fund_emergency = remaining_monthly_income >= emergency_balance
+
+        if can_fully_fund_emergency:
+            emergency_fund_contribution = emergency_fund_deficit
+            remaining_monthly_income -= emergency_fund_deficit
+            logging.info("fully funding emergency fund")
+        else:
+            emergency_fund_contribution = remaining_monthly_income
+            logging.info(
+                f"contributing final {remaining_monthly_income} to emergency fund"
+            )
+
+        action_plan.update({"emergency_fund_contribution": emergency_fund_contribution})
+        return remaining_monthly_income
+
+    def add_roth_ira_contribution(action_plan: dict, remaining_monthly_income: int):
+        # simplify to say we can only contribute $500 / month to roth
+        # later consider tracking annual contribution and contribute until max
+        ira_contribution_limit = 50000
+
+        can_max_contribution = ira_contribution_limit < remaining_monthly_income
+        if can_max_contribution:
+            roth_ira_contribution = ira_contribution_limit
+            remaining_monthly_income -= ira_contribution_limit
+            logging.info("maxing roth ira contribution")
+        else:
+            roth_ira_contribution = remaining_monthly_income
+            logging.info(f"contributing final {remaining_monthly_income} to roth_ira")
+
+        action_plan.update({"roth_ira_contribution": roth_ira_contribution})
+        return remaining_monthly_income
+
+    def increase_401k_contribution(action_plan, remaining_monthly_income) -> int:
+        # saying we can max contribute 25% gross income to 401k
+        # potential bug here if income ever exceeds 0.25
+        additional_contribution_percent_limit = 0.25 - income.get(
+            "401k_percent_contribution"
+        )
+
+        current_401k_contribution = action_plan.get("401k_contribution")
+        max_additional_contribution = round(
+            income.get("gross_annual") * additional_contribution_percent_limit
+        )
+
+        can_max_401k = remaining_monthly_income >= max_additional_contribution
+
+        if can_max_401k:
+            contribution_to_401k = (
+                current_401k_contribution + max_additional_contribution
+            )
+            remaining_monthly_income -= max_additional_contribution
+            logging.info("maxing 401k contribution")
+        else:
+            contribution_to_401k = current_401k_contribution + remaining_monthly_income
+            logging.info(f"contributing final {remaining_monthly_income} to 401k")
+            remaining_monthly_income = 0
+
+        action_plan.update({"401k_contribution": contribution_to_401k})
+        return remaining_monthly_income
 
     action_plan = {
         "available_income": 0,
         "high_interest_debt_payments": [],
         "emergency_fund_contribution": 0,
         "roth_ira_contribution": 0,
-        "401k_contribution": match_with_401k,
+        "401k_contribution": 0,
         "brokerage_contribution": 0,
     }
-    my_debts: list[dict] = net_worth.get("debt")
-    plan_debt_payments: list[dict] = action_plan.get("high_interest_debt_payments", [])
 
-    available_savings = spending.get("available_savings")
-    action_plan.update({"available_income": available_savings})
-
-    if available_savings <= 0:
+    remaining_monthly_income = spending.get("remaining_monthly_income")
+    if remaining_monthly_income <= 0:
         raise Exception("you're broke son")
+    else:
+        action_plan.update({"available_income": remaining_monthly_income})
+
+    # these methods mutate the provided action_plan dict
+    # similar pattern to Builder
+    add_401k_contribution(action_plan)
 
     # Priority One: Pay to High-Interest Debt
-    for debt in filter(lambda d: d.get("is_high_interest"), my_debts):
-        cur_balance = debt.get("balance")
-        if cur_balance >= available_savings:
-            plan_debt_payments.append(
-                {"name": debt.get("name"), "payment": available_savings}
-            )
-            return action_plan
-        else:
-            plan_debt_payments.append(
-                {"name": debt.get("name"), "payment": cur_balance}
-            )
-            available_savings -= cur_balance
+    debts: list[dict] = net_worth.get("debt")
+    remaining_monthly_income = add_debt_payments(
+        action_plan=action_plan,
+        debts=debts,
+        remaining_monthly_income=remaining_monthly_income,
+    )
+    if not remaining_monthly_income:
+        return action_plan
 
     # Priority Two: Save Emergency Fund (3mo)
-    emergency_goal = (
-        spending.get("living_expenses") + spending.get("debt_obligations") * 3
+    remaining_monthly_income = add_emergency_fund_contribution(
+        action_plan, remaining_monthly_income
     )
-    emergency_fund = next(
-        (a for a in net_worth.get("banking") if a.get("name") == "emergency_fund"), {}
-    )
-    emergency_balance = emergency_fund.get("balance")
-
-    if emergency_balance < emergency_goal:
-        remaining_to_goal = emergency_goal - emergency_balance
-        if remaining_to_goal >= available_savings:
-            action_plan.update({"emergency_fund_contribution": available_savings})
-            return action_plan
-        else:
-            action_plan.update({"emergency_fund_contribution": remaining_to_goal})
-            available_savings -= remaining_to_goal
+    if not remaining_monthly_income:
+        return action_plan
 
     # Priority Three: Roth IRA
-    # simplify to say we can only contribute $500 / month to roth
-    # later consider tracking annual contribution and contribute until max
-    ira_contribution_limit = 50000
-    if ira_contribution_limit >= available_savings:
-        action_plan.update({"roth_ira_contribution": available_savings})
+    remaining_monthly_income = add_roth_ira_contribution(
+        action_plan, remaining_monthly_income
+    )
+    if not remaining_monthly_income:
         return action_plan
-    else:
-        action_plan.update({"roth_ira_contribution": ira_contribution_limit})
-        available_savings -= ira_contribution_limit
 
     # Priority Four: Company 401k
-    # saying we can max contribute 25% gross income to 401k
-    additional_contribution_percent_limit = 0.25 - income.get(
-        "401k_percent_contribution"
+    remaining_monthly_income = increase_401k_contribution(
+        action_plan, remaining_monthly_income
     )
-    contribution_limit_401k = round(
-        income.get("gross_annual") * additional_contribution_percent_limit
-    )
-    if contribution_limit_401k >= available_savings:
-        action_plan.update(
-            {
-                "401k_contribution": action_plan.get("401k_contribution")
-                + available_savings
-            }
-        )
+    if not remaining_monthly_income:
         return action_plan
-    else:
-        action_plan.update(
-            {
-                "401k_contribution": action_plan.get("401k_contribution")
-                + contribution_limit_401k
-            }
-        )
-        available_savings -= contribution_limit_401k
+
+    # Priority Five: Brokerage
+    remaining_monthly_income = 0
+    action_plan.update(
+        {
+            "brokerage_contribution": remaining_monthly_income,
+            "remaining_monthly_income": remaining_monthly_income,
+        }
+    )
 
     return action_plan
 
