@@ -132,7 +132,6 @@ def build_action_plan(income, spending, net_worth):
     """
 
     action_plan = {
-        "available_income": 0,
         "high_interest_debt_payments": [],
         "emergency_fund_contribution": 0,
         "roth_ira_contribution": 0,
@@ -143,8 +142,6 @@ def build_action_plan(income, spending, net_worth):
     remaining_monthly_income = spending.get("remaining_monthly_income")
     if remaining_monthly_income <= 0:
         raise Exception("you're broke son")
-    else:
-        action_plan.update({"available_income": remaining_monthly_income})
 
     # these methods mutate the provided action_plan dict
     # similar pattern to Builder
@@ -161,7 +158,11 @@ def build_action_plan(income, spending, net_worth):
         return action_plan
 
     # Priority Two: Save Emergency Fund (3mo)
-    emergency_fund = net_worth.get("banking", {}).get("emergency_fund")
+    emergency_fund = next(
+        acct
+        for acct in net_worth.get("banking", [])
+        if acct.get("name") == "emergency_fund"
+    )
     remaining_monthly_income = add_emergency_fund_contribution(
         action_plan, emergency_fund, remaining_monthly_income
     )
@@ -177,7 +178,7 @@ def build_action_plan(income, spending, net_worth):
 
     # Priority Four: Company 401k
     remaining_monthly_income = increase_401k_contribution(
-        action_plan, spending, remaining_monthly_income
+        action_plan, income, remaining_monthly_income
     )
     if not remaining_monthly_income:
         return action_plan
@@ -186,7 +187,6 @@ def build_action_plan(income, spending, net_worth):
     action_plan.update(
         {
             "brokerage_contribution": remaining_monthly_income,
-            "remaining_monthly_income": 0,
         }
     )
 
@@ -260,7 +260,8 @@ def add_emergency_fund_contribution(
         return remaining_monthly_income
 
     goal_remaining = emergency_goal - emergency_balance
-    can_fully_fund_emergency = remaining_monthly_income >= emergency_balance
+
+    can_fully_fund_emergency = remaining_monthly_income >= goal_remaining
     if can_fully_fund_emergency:
         emergency_fund_contribution = goal_remaining
         remaining_monthly_income -= goal_remaining

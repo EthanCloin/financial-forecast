@@ -1,4 +1,3 @@
-from audioop import add
 import pytest
 from main import (
     add_401k_contribution,
@@ -146,33 +145,36 @@ def test_action_plan_fails_on_no_income():
 
 
 def test_action_plan_distributes_to_all_priorities():
-    pass
     income = {
-        "gross_annual": 36000,
-        "401k_monthly_contribution": 300,  # this should rly be a calculated field
-        "401k_percent_contribution": 10.0,
-        "net_monthly": 2500,
+        "gross_annual": 3600000,
+        "401k_monthly_contribution": 30000,  # this should rly be a calculated field
+        "401k_percent_contribution": 0.10,
+        "net_monthly": 250000,
     }
 
     net_worth = {
         "banking": [
-            {"name": "checking", "balance": 1000},
+            {"name": "checking", "balance": 100000},
             {"name": "savings", "balance": 0},
-            {"name": "emergency_fund", "balance": 2800, "goal": 3000},
+            {
+                "name": "emergency_fund",
+                "balance": 280000,
+                "goal": 300000,
+            },  # expect 200 contribution
         ],
         "retirement": {"name": "401k", "balance": 0},
         "investment": {"balance": 0},
         "debt": [
             {
                 "name": "credit_cards",
-                "balance": 200,
-                "monthly_payment": 200,
+                "balance": 20000,
+                "monthly_payment": 10000,  # expect 100 additional_payment
                 "is_high_interest": True,
             },
             {
                 "name": "auto_loan",
-                "balance": 2000,
-                "monthly_payment": 100,
+                "balance": 200000,
+                "monthly_payment": 10000,
                 "is_high_interest": False,
             },
         ],
@@ -181,8 +183,27 @@ def test_action_plan_distributes_to_all_priorities():
     spending = {
         "debt_obligations": sum(
             d.get("monthly_payment") for d in net_worth.get("debt")
-        ),
-        "living_expenses": 900,
+        ),  # 200
+        "living_expenses": 90000,  # 900
         "bullshit": 0,
-        "remaining_monthly_income": income.get("net_monthly") - 900,
+        "remaining_monthly_income": income.get("net_monthly")
+        - 110000,  # 1400 available
     }
+
+    action_plan = build_action_plan(income, spending, net_worth)
+
+    expected_action_plan = {
+        "high_interest_debt_payments": [
+            {
+                "name": "credit_cards",
+                "payment": 10000,  # 1400 - 100 = 1300
+                "is_final_payment": True,
+            }
+        ],
+        "emergency_fund_contribution": 20000,  # 1300 - 200 = 1100
+        "roth_ira_contribution": 50000,  # 1100 - 500 = 600
+        "401k_contribution": 45000 + (2 * 30000),  # 600 - 450 = 150
+        "brokerage_contribution": 15000,  # 150 - 150 = 0
+    }
+
+    assert action_plan == expected_action_plan
