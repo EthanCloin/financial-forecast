@@ -2,6 +2,10 @@ import logging
 from pprint import pformat
 
 
+# TODO: consider changing the logic of 401k contribution.
+#   i don't like the assumptions being built in here to double and
+#   the lack of clarity as to which portions of the contribution are
+#   subtracted from the available income.
 def build_action_plan(income, spending, net_worth):
     """
     is there available income ? prioritize : exception
@@ -18,7 +22,7 @@ def build_action_plan(income, spending, net_worth):
         "high_interest_debt_payments": [],
         "emergency_fund_contribution": 0,
         "roth_ira_contribution": 0,
-        "401k_contribution": 0,
+        "401k_contribution": {},
         "brokerage_contribution": 0,
     }
 
@@ -81,11 +85,13 @@ def add_401k_contribution(action_plan, income) -> None:
     apply whatever 401k contribution was specified upon collection
     of spending data to action_plan.
 
-    doubling contribution to represent 100% employer match
+    not applying any employer_match
     """
-    # super simple 100% match assuming provided value qualifies for max value.
-    matched_401k_contribution = income.get("401k_monthly_contribution") * 2
-    action_plan.update({"401k_contribution": matched_401k_contribution})
+    action_plan.get("401k_contribution").update(
+        {
+            "before_paycheck": income.get("401k_monthly_contribution"),
+        }
+    )
 
 
 def add_debt_payments(action_plan: dict, debts, remaining_monthly_income: int) -> int:
@@ -182,7 +188,6 @@ def increase_401k_contribution(
     # potential bug here if income ever exceeds 0.25
     additional_contribution_percent = 0.25 - income.get("401k_percent_contribution")
     gross_monthly_income = income.get("gross_annual") / 12
-    current_401k_contribution = action_plan.get("401k_contribution")
     max_additional_contribution = round(
         additional_contribution_percent * gross_monthly_income
     )
@@ -190,13 +195,15 @@ def increase_401k_contribution(
     can_max_401k = remaining_monthly_income >= max_additional_contribution
 
     if can_max_401k:
-        contribution_to_401k = current_401k_contribution + max_additional_contribution
-        remaining_monthly_income -= max_additional_contribution
         logging.info("maxing 401k contribution")
+        additional_contribution = max_additional_contribution
+        remaining_monthly_income -= max_additional_contribution
     else:
-        contribution_to_401k = current_401k_contribution + remaining_monthly_income
         logging.info(f"contributing final {remaining_monthly_income} to 401k")
+        additional_contribution = remaining_monthly_income
         remaining_monthly_income = 0
 
-    action_plan.update({"401k_contribution": contribution_to_401k})
+    action_plan.get("401k_contribution").update(
+        {"additional_contribution": additional_contribution}
+    )
     return remaining_monthly_income

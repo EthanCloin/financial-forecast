@@ -11,20 +11,11 @@ logging.basicConfig(level="INFO")
 
 
 def main():
-    GOAL_DOLLARS = 100000
     net_worth = get_net_worth()
     income = get_income()
     spending = get_spending(net_worth.get("debt"), income.get("net_monthly"))
     action_plan = build_action_plan(income, spending, net_worth)
     pprint(action_plan)
-
-    # months = 0
-    # while net_worth["total_dollars"] < GOAL_DOLLARS:
-    #     new_net_worth = execute_action_plan(net_worth, action_plan)
-    #     net_worth = new_net_worth
-    #     months += 1
-
-    pass
 
 
 def get_net_worth():
@@ -82,11 +73,11 @@ def get_net_worth():
 
 def get_income():
     # Gross Annual
-    gross_annual = 750000000
+    gross_annual = 7500000
     # Retirement Contribution
     contribution_401k = 0.08
     # Net Monthly
-    net_monthly = 4800000000
+    net_monthly = 480000
 
     income = {
         "gross_annual": gross_annual,
@@ -126,6 +117,7 @@ def execute_action_plan(net_worth, action_plan):
     returned an updated net worth after applying contributions to decrease
     debts and increase investments
     """
+
     pass
 
 
