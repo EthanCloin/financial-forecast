@@ -121,5 +121,25 @@ def execute_action_plan(net_worth, action_plan):
     pass
 
 
+def interview_client(skip_for_hardcoded=False):
+    """
+    do you have a dedicated emergency fund? balance?
+    what is the current balance in your checking and savings accounts?
+    do you have any investments? IRA? Brokerage?
+
+    do you have any debts (balance? minimum_monthly?) ?
+    how much do you need to spend to live each month (non-debt bills, groceries) ?
+
+    -- alternate path here is hourly rate --
+    what is your gross annual income?
+    what is received as net income each month?
+    are you contributing to a company 401k (match?) ?
+
+    which of these best describes your current goal?
+    - become debt-free
+    - reach a target net worth
+    """
+
+
 if __name__ == "__main__":
     main()
