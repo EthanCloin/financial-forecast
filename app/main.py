@@ -139,6 +139,7 @@ def interview_client(skip_for_hardcoded=False):
     - become debt-free
     - reach a target net worth
     """
+    pass
 
 
 if __name__ == "__main__":
