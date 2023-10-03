@@ -7,6 +7,9 @@
     <title>{% block title %} {% endblock %}</title>
 </head>
 <body>
+    <nav class="flex items-center p-5 h-12 w-screen bg-emerald-800 opacity-80 text-slate-200">
+        <a href="/welcome" class="text-2xl">Home</a>
+    </nav>
     {% block content %}
     <h1>Hello World!</h1>
     {% endblock %}
