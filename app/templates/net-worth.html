@@ -1,0 +1,20 @@
+{% extends "/shared/_base.html" %}
+{% block title %} Net Worth {% endblock %}
+
+{% block content %} 
+<h1>Your Net Worth</h1>
+<p>
+    Your net worth represents the difference between what you OWN and what you OWE.
+    To learn where your net worth stands today, let's get a picture of your account balances. 
+</p>
+
+<h2>Account Balances</h2>
+<p>
+    Financial independence begins with cash savings! If you have a dedicated 'Emergency Fund'
+    enter the balance below. Also provide the balances of your other Checking and Saving Accounts
+</p>
+<form>
+    <label for="emergency-fund">Emergency Fund Balance</label>
+    <input id="emergency-fund" type="number" min="0" step="1"/>
+</form>
+{% endblock %}

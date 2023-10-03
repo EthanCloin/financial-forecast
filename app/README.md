@@ -6,11 +6,15 @@ Main variables to build this plan are current Net Worth and Spending.
 
 Action plan should execute and update net worth until the value reaches a given `GOAL_DOLLARS`
 
-## V1
+## Step 1
 
 hardcoded variables and simple dictionaries to address my curiosity.
 
 > note: values used and saved to Git are either targeting averages in florida or spitballed
+
+## Step 2
+
+fastapi + jinja html templates to collect user info
 
 ## Possible Extensions
 
