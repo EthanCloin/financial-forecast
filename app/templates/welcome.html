@@ -1,10 +1,8 @@
 {% extends "/shared/_base.html" %}
-{% block title %} Welcome {% endblock %}
-
-{% block content %} 
-<div class="bg-slate-50 max-w-screen-lg flex flex-col">
-    <h1 class="text-3xl font-bold self-center">Welcome to Finance Forecast</h1>
-    <p class="text-xl">Let's first get a picture of your current finances.</p>
-    <a href="/net-worth">Get Started</a>
-</div>
+{% block content %}
+    <div class="flex flex-col h-full max-w-screen-lg bg-slate-50">
+        <h1 class="self-center text-3xl font-bold">Welcome to Finance Forecast</h1>
+        <p class="text-xl">Let's first get a picture of your current finances.</p>
+        <a href="/net-worth">Get Started</a>
+    </div>
 {% endblock %}

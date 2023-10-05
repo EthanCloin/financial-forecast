@@ -1,17 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', path='css/main.css') }}" type="text/css" />
-    <title>{% block title %} {% endblock %}</title>
-</head>
-<body>
-    <nav class="flex items-center p-5 h-12 w-screen bg-emerald-800 opacity-80 text-slate-200">
-        <a href="/welcome" class="text-2xl">Home</a>
-    </nav>
-    {% block content %}
-    <h1>Hello World!</h1>
-    {% endblock %}
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- these were added to appease linter -->
+    <meta name="description" content="foo" />
+    <meta name="keywords" content="foo, bar" />
+    <link rel="stylesheet"
+          href="{{ url_for('static', path='css/main.css') }}"
+          type="text/css" />
+    <title>
+      {% block title %}{% endblock %}
+    </title>
+  </head>
+  <body>
+    <div class="flex flex-col h-screen pb-5 bg-gray-200">
+      <nav class="z-50 flex items-center justify-start w-screen h-20 grow-0 text-slate-200 bg-emerald-800 opacity-80">
+        <a href="/welcome" class="self-center ml-3 text-2xl h-fit">Home</a>
+      </nav>
+      {% block content %}<h1>Hello World!</h1>{% endblock %}
+    </div>
+  </body>
 </html>
