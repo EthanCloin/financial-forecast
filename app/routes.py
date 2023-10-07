@@ -16,5 +16,17 @@ def welcome(request: Request):
 
 
 @router.get("/net-worth")
-def collect_net_worth(request: Request):
+def intro_net_worth(request: Request):
     return templates.TemplateResponse("net-worth.html", {"request": request})
+
+@router.get("/net-worth/survey")
+async def survey_net_worth(request: Request):
+    return templates.TemplateResponse("net-worth-survey.html", {"request": request})
+    
+@router.get("/income")
+def intro_income(request: Request):
+    return templates.TemplateResponse("income.html", {"request": request})
+
+@router.get("/income/survey")
+async def survey_income(request: Request):
+    return templates.TemplateResponse("income-survey.html", {"request": request})
