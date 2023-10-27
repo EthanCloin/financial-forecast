@@ -54,7 +54,7 @@ async def get_recovery_plan(req: RecoveryPlanRequest):
     return RecoveryPlanResponse(
         balances=recovery_plan.get("balances"),
         debts=recovery_plan.get("debts"),
-        emergency_fund=str(recovery_plan.get("emergency_fund")),
+        emergency_fund=recovery_plan.get("emergency_fund"),
         debt_payments=recovery_plan.get("debt_payments"),
         is_debt_free=recovery_plan.get("is_debt_free"),
     )
