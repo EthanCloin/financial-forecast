@@ -25,30 +25,9 @@ def main():
     recovery_plan = build_recovery_plan(balances, net_monthly_income, needs, debts)
 
     while True:
-        # here i need to apply the plan to get a new set of balances and debts
-        paid_to_emergency_fund = recovery_plan.get("emergency_fund")
-        if paid_to_emergency_fund:
-            # update to emergency_fund is carried into balances array, thx python
-            emergency_fund = next(
-                acct for acct in balances if acct.get("name") == "emergency"
-            )
-            emergency_fund.update(
-                {"balance": emergency_fund.get("balance") + paid_to_emergency_fund}
-            )
-
-        paid_to_debts = recovery_plan.get("debt_payments")
-        if paid_to_debts:
-            for payment in paid_to_debts:
-                debt = next(d for d in debts if d.get("name") == payment.get("name"))
-                debt.update({"balance": debt.get("balance") - payment.get("amount")})
-                if debt.get("balance") == 0:
-                    debt.update({"min_monthly": 0})
-
-        debt_free = sum(d.get("balance") for d in debts) == 0
-        if debt_free:
+        recovery_plan = execute_recovery_plan(recovery_plan, balances, debts)
+        if recovery_plan.get("is_debt_free"):
             break
-
-        # at this point the balances and debts are updated, needs and income shouldn't change
         recovery_plan = build_recovery_plan(balances, net_monthly_income, needs, debts)
 
     paid_to_debts = recovery_plan.get("debt_payments")
@@ -79,14 +58,34 @@ def build_recovery_plan(
         return recovery_plan
 
     available_income = pay_to_debts(available_income, recovery_plan, debts, strategy)
-    if available_income == 0:
-        recovery_plan.update({"is_debt_free": False})
-    """
-    note on the is_debt_free flag:
-    expecting to use it in some function making repeated calls to 
-    this recovery plan method. when that sees this flag, it should
-    cease calling.
-    """
+    return recovery_plan
+
+
+def execute_recovery_plan(recovery_plan, balances, debts):
+    paid_to_emergency_fund = recovery_plan.get("emergency_fund")
+    if paid_to_emergency_fund:
+        # update to emergency_fund is carried into balances array, thx python
+        emergency_fund = next(
+            acct for acct in balances if acct.get("name") == "emergency"
+        )
+        emergency_fund.update(
+            {"balance": emergency_fund.get("balance") + paid_to_emergency_fund}
+        )
+
+    paid_to_debts = recovery_plan.get("debt_payments")
+    if paid_to_debts:
+        for payment in paid_to_debts:
+            debt = next(d for d in debts if d.get("name") == payment.get("name"))
+            debt.update({"balance": debt.get("balance") - payment.get("amount")})
+            if debt.get("balance") == 0:
+                debt.update({"min_monthly": 0})
+
+    debt_free = sum(d.get("balance") for d in debts) == 0
+
+    # at this point the balances and debts are updated, needs and income shouldn't change
+    recovery_plan.update(
+        {"balances": balances, "debts": debts, "is_debt_free": debt_free}
+    )
     return recovery_plan
 
 
@@ -125,7 +124,6 @@ def pay_to_debts(available_income: int, recovery_plan, debts, strategy) -> int:
             recovery_plan.update(
                 {
                     "debt_payments": [{"name": "total", "amount": total_debt}],
-                    "is_debt_free": True,
                 }
             )
             return available_income

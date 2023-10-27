@@ -24,7 +24,7 @@ class Settings(BaseSettings):
         "default_response_class": HTMLResponse,  # Change default from JSONResponse
     }
 
-    DISABLE_DOCS: bool = True
+    DISABLE_DOCS: bool = False
 
     @property
     def fastapi_kwargs(self) -> dict[str, Any]:
