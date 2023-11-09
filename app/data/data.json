@@ -1,0 +1,28 @@
+{
+    "_default": {},
+    "users": {
+        "1": {
+            "balances": [
+                {
+                    "balance": 1000,
+                    "name": "emergency"
+                }
+            ],
+            "debts": [
+                {
+                    "balance": 12000,
+                    "min_monthly": 300,
+                    "name": "total"
+                }
+            ],
+            "id": "ethan",
+            "needs": [
+                {
+                    "amount": 2000,
+                    "name": "total"
+                }
+            ],
+            "net_monthly_income": 5000
+        }
+    }
+}

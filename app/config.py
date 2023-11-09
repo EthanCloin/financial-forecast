@@ -16,6 +16,7 @@ class Settings(BaseSettings):
 
     STATIC_DIR: Path = APP_DIR / "static"
     TEMPLATE_DIR: Path = APP_DIR / "templates"
+    DATA_DIR: Path = APP_DIR / "data"
 
     FASTAPI_PROPERTIES: dict[str, Any] = {
         "title": "Simple Site",
