@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 from fastapi.templating import Jinja2Templates
-import uvicorn
 from models import RecoveryPlanRequest, RecoveryPlanResponse
 from crud import CRUD
 
