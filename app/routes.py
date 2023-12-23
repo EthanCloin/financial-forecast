@@ -12,15 +12,21 @@ router = APIRouter()
 def index(request: Request):
     return templates.TemplateResponse("shared/_base.html", {"request": request})
 
+
 @router.post("/register")
 def register(request: RegisterUserRequest):
     # check if username already exists in db
-    # if so, redirect payload to login route
+    db = CRUD().with_table("users")
+    user = db.lookup_user(request.username)
+    if user:
+        # redirect payload to login route
+        pass
 
-    # else add to users table 
+    # else add to users table
     #   add username
     #   hash and salt password
     #   add uuid
+
 
 @router.get("/welcome")
 def welcome(request: Request):

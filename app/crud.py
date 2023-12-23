@@ -1,4 +1,4 @@
-from tinydb import Query, TinyDB, where
+from tinydb import Query, TinyDB
 from config import Settings
 
 settings = Settings()
@@ -24,6 +24,14 @@ class CRUD:
             self.db = self.table
         return self.db.get(Query().id == "ethan")
 
+    def lookup_user(self, username: str):
+        """return user if username present in users table"""
+        if not self.db:
+            self.init_db
+        if self.table:
+            self.db = self.table
+        return self.table.get(Query().username == username)
+
     @property
     def init_db(self):
         path = str(settings.DATA_DIR / "data.json")
@@ -43,9 +51,11 @@ def main():
     my_db = CRUD().init_db
     my_db.truncate()
     users = my_db.table("users")
+    users.truncate()
     users.insert(
         {
             "id": "ethan",
+            "username": "psnethan@gmail.com",
             "balances": [{"name": "emergency", "balance": 1000}],
             "net_monthly_income": 5000,
             "needs": [{"name": "total", "amount": 2000}],
