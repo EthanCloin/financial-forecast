@@ -15,3 +15,8 @@ class RecoveryPlanResponse(BaseModel):
     emergency_fund: int | None
     debt_payments: list[dict] | None
     is_debt_free: bool
+
+
+class RegisterUserRequest(BaseModel):
+    username: str
+    password: str

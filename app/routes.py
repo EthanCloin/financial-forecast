@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Depends
 from fastapi.responses import JSONResponse
 from fastapi.templating import Jinja2Templates
-from models import RecoveryPlanRequest, RecoveryPlanResponse
+from models import RecoveryPlanRequest, RecoveryPlanResponse, RegisterUserRequest
 from crud import CRUD
 
 templates = Jinja2Templates(directory="templates")
@@ -12,6 +12,15 @@ router = APIRouter()
 def index(request: Request):
     return templates.TemplateResponse("shared/_base.html", {"request": request})
 
+@router.post("/register")
+def register(request: RegisterUserRequest):
+    # check if username already exists in db
+    # if so, redirect payload to login route
+
+    # else add to users table 
+    #   add username
+    #   hash and salt password
+    #   add uuid
 
 @router.get("/welcome")
 def welcome(request: Request):

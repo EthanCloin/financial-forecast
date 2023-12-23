@@ -1,8 +1,8 @@
 {% extends "/shared/_base.html" %} {% block content %}
 <h1 class="h-12 mt-5 text-3xl font-bold text-center">Income</h1>
-<form id="income-form">
+<form id="income-form" action="">
   <!-- gross annual -->
-  <div class="flex flex-col" id="gross-annual-group">
+  <!-- <div class="flex flex-col" id="gross-annual-group">
     <p
       class="self-center w-10/12 p-3 overflow-auto text-left rounded-md text-l bg-slate-50"
     >
@@ -23,8 +23,7 @@
         validationType="currency"
       />
     </div>
-  </div>
-  <!-- gross annual -->
+  </div> -->
   <!-- net monthly -->
   <div class="flex flex-col" id="net-monthly-group">
     <p
@@ -51,6 +50,10 @@
   </div>
 </form>
 <!-- ensure that user can only supply numbers and decimal point. format as USD after exiting focus of element -->
-<script id="currency-validation" src="{{ url_for('static', path='js/currencyValidations.js') }}"></script>
+<script
+  id="currency-validation"
+  src="{{ url_for('static', path='js/currencyValidations.js') }}"
+></script>
+<!-- <script src="{{ url_for('static', path='js/htmx.min.js') }}"></script> -->
 
 {% endblock content %}
