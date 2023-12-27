@@ -1,11 +1,16 @@
-from fastapi import APIRouter, Request, Depends
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, HTTPException, Request, Depends, status
+from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from models import RecoveryPlanRequest, RecoveryPlanResponse, RegisterUserRequest
 from crud import CRUD
+from config import Settings
+import logging
 
-templates = Jinja2Templates(directory="templates")
+
+settings = Settings()
+templates = Jinja2Templates(directory=settings.TEMPLATE_DIR)
 router = APIRouter()
+_log = logging.getLogger(__name__)
 
 
 @router.get("/")
@@ -16,16 +21,42 @@ def index(request: Request):
 @router.post("/register")
 def register(request: RegisterUserRequest):
     # check if username already exists in db
-    db = CRUD().with_table("users")
-    user = db.lookup_user(request.username)
+    _log.debug("beginning register user: %s", request)
+    users = CRUD().with_table("users")
+    user = users.lookup_user(request.username)
     if user:
         # redirect payload to login route
-        pass
+        return RedirectResponse("/login", status_code=status.HTTP_302_FOUND)
 
     # else add to users table
-    #   add username
-    #   hash and salt password
-    #   add uuid
+    users.insert_user(request.username, request.password)
+
+
+@router.get("/register")
+def register_view(request: Request):
+    pass
+
+
+@router.post("/login")
+def login(request: RegisterUserRequest):
+    users = CRUD().with_table("users")
+    user = users.lookup_user(request.username)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="username does not exist"
+        )
+    if not user["password"] == request.password:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="password is not correct"
+        )
+
+    sessions = CRUD().with_table("sessions")
+    session_id = sessions.create_session(user["id"])
+    return RedirectResponse(
+        "/",
+        status_code=status.HTTP_302_FOUND,
+        headers={"Set-Cookie": f"session:{session_id}"},
+    )
 
 
 @router.get("/welcome")

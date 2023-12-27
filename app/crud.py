@@ -1,5 +1,11 @@
+from datetime import datetime
+from time import timezone
 from tinydb import Query, TinyDB
 from config import Settings
+from uuid import uuid4
+import logging
+
+_log = logging.getLogger(__name__)
 
 settings = Settings()
 
@@ -28,9 +34,45 @@ class CRUD:
         """return user if username present in users table"""
         if not self.db:
             self.init_db
+        if self.table == "users":
+            self.db = self.table
+        else:
+            _log.error(
+                "Attempted to lookup user without providing proper table. Expected 'users' got %s",
+                self.table,
+            )
+
+        return self.table.get(Query().username == username)
+
+    def insert_user(self, username: str, password: str):
+        if not self.db:
+            self.init_db
         if self.table:
             self.db = self.table
-        return self.table.get(Query().username == username)
+        user = {
+            "id": str(uuid4()),
+            "username": username,
+            # this password should be sha256 encrypted on the frontend
+            "password": password,
+        }
+        _log.debug("Inserting new user %s", user)
+        self.db.insert(user)
+
+    def create_session(self, user_id):
+        if not self.db:
+            self.init_db
+        if self.table:
+            self.db = self.table
+        session_id = str(uuid4())
+        self.db.insert(
+            {
+                "user_id": user_id,
+                "session_id": session_id,
+                "created": str(datetime.utcnow()),
+                "accessed": str(datetime.utcnow()),
+            }
+        )
+        return session_id
 
     @property
     def init_db(self):
