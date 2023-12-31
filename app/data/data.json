@@ -5,6 +5,12 @@
             "created": "2023-12-31 04:10:18.264133",
             "session_id": "9b618d7f-c2d1-4974-ac5f-89ed0ea85db3",
             "user_id": "ethan"
+        },
+        "2": {
+            "accessed": "2023-12-31 04:25:38.160133",
+            "created": "2023-12-31 04:25:38.160089",
+            "session_id": "f6fa7dbb-d14f-4e41-b0f9-b9e969f16099",
+            "user_id": "4dcef145-f1db-4555-b742-93f913eeec48"
         }
     },
     "users": {
@@ -32,6 +38,16 @@
             "net_monthly_income": 5000,
             "password": "$pbkdf2-sha256$29000$PgcgxPjf27sXwhjDWOv9Xw$ly31FFuPlaq4V9g7cc8jJkZt2OMbM21nJLgzQkHxFPM",
             "username": "psnethan@gmail.com"
+        },
+        "2": {
+            "id": "1c97536d-b5bb-4d9a-9982-47cea1a5a458",
+            "password": "$pbkdf2-sha256$29000$3bt3zhnjvBfivLcWghDCWA$.FeDB8D9ya60axstlaKCckkQsJzUu7Yt9o7Z5T2bgxk",
+            "username": "new@gmail.com"
+        },
+        "3": {
+            "id": "4dcef145-f1db-4555-b742-93f913eeec48",
+            "password": "$pbkdf2-sha256$29000$IcT433sPQSglpDRGqJXSGg$oU4hYprql3aoUHpEmzYM5ZbIAOgir5g0qfWC9oYL0WA",
+            "username": "another@gmail.com"
         }
     }
 }

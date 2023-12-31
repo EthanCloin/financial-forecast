@@ -57,6 +57,7 @@ class CRUD:
         }
         _log.debug("Inserting new user %s", user)
         self.db.insert(user)
+        return user
 
     def create_session(self, user_id):
         if not self.db:

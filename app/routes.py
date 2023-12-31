@@ -31,10 +31,11 @@ async def register(request: Request):
     user = users.lookup_user(username)
     if user:
         # redirect payload to login route
+        # would be nice to autofill the login page with provided credentials
         return RedirectResponse("/login", status_code=status.HTTP_302_FOUND)
 
     # else add to users table and create session
-    users.insert_user(username, password)
+    user = users.insert_user(username, password)
     sessions = CRUD().with_table("sessions")
     session_id = sessions.create_session(user["id"])
     return RedirectResponse(
