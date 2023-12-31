@@ -98,6 +98,7 @@ def main():
         {
             "id": "ethan",
             "username": "psnethan@gmail.com",
+            "password": "$pbkdf2-sha256$29000$PgcgxPjf27sXwhjDWOv9Xw$ly31FFuPlaq4V9g7cc8jJkZt2OMbM21nJLgzQkHxFPM",
             "balances": [{"name": "emergency", "balance": 1000}],
             "net_monthly_income": 5000,
             "needs": [{"name": "total", "amount": 2000}],

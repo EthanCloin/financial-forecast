@@ -1,28 +1,10 @@
 {
     "_default": {
         "1": {
-            "accessed": "2023-12-27 17:47:49.864647",
-            "created": "2023-12-27 17:47:49.375729",
-            "session_id": "1bfbb2f9-a91c-493d-9333-36e8398077c6",
-            "user_id": "7e0550f1-777e-4ef1-a098-2b1af2e30d46"
-        },
-        "2": {
-            "accessed": "2023-12-27 17:50:22.357988",
-            "created": "2023-12-27 17:50:22.357964",
-            "session_id": "53a3725e-584c-4463-98cf-dd69112ef3b4",
-            "user_id": "7e0550f1-777e-4ef1-a098-2b1af2e30d46"
-        },
-        "3": {
-            "accessed": "2023-12-27 17:50:47.354239",
-            "created": "2023-12-27 17:50:47.354215",
-            "session_id": "9d1aaafe-3c9f-4080-bbc7-42e87718cf42",
-            "user_id": "7e0550f1-777e-4ef1-a098-2b1af2e30d46"
-        },
-        "4": {
-            "accessed": "2023-12-27 17:51:52.442442",
-            "created": "2023-12-27 17:51:52.442419",
-            "session_id": "481f7bca-509b-420d-87fd-dc6a217c9056",
-            "user_id": "7e0550f1-777e-4ef1-a098-2b1af2e30d46"
+            "accessed": "2023-12-31 04:10:18.264156",
+            "created": "2023-12-31 04:10:18.264133",
+            "session_id": "9b618d7f-c2d1-4974-ac5f-89ed0ea85db3",
+            "user_id": "ethan"
         }
     },
     "users": {
@@ -48,12 +30,8 @@
                 }
             ],
             "net_monthly_income": 5000,
+            "password": "$pbkdf2-sha256$29000$PgcgxPjf27sXwhjDWOv9Xw$ly31FFuPlaq4V9g7cc8jJkZt2OMbM21nJLgzQkHxFPM",
             "username": "psnethan@gmail.com"
-        },
-        "2": {
-            "id": "7e0550f1-777e-4ef1-a098-2b1af2e30d46",
-            "password": "string",
-            "username": "string"
         }
     }
 }

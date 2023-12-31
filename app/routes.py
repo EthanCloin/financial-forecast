@@ -1,9 +1,10 @@
-from fastapi import APIRouter, HTTPException, Request, Depends, status
+from fastapi import APIRouter, HTTPException, Request, status
 from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from models import RecoveryPlanRequest, RecoveryPlanResponse, RegisterUserRequest
 from crud import CRUD
 from config import Settings
+import security
 import logging
 
 
@@ -19,33 +20,53 @@ def index(request: Request):
 
 
 @router.post("/register")
-def register(request: RegisterUserRequest):
+async def register(request: Request):
+    form_data = await request.form()
+    username = form_data.get("username")
+    password = security.encrypt_password(form_data.get("password"))
+
     # check if username already exists in db
     _log.debug("beginning register user: %s", request)
     users = CRUD().with_table("users")
-    user = users.lookup_user(request.username)
+    user = users.lookup_user(username)
     if user:
         # redirect payload to login route
         return RedirectResponse("/login", status_code=status.HTTP_302_FOUND)
 
-    # else add to users table
-    users.insert_user(request.username, request.password)
+    # else add to users table and create session
+    users.insert_user(username, password)
+    sessions = CRUD().with_table("sessions")
+    session_id = sessions.create_session(user["id"])
+    return RedirectResponse(
+        "/",
+        status_code=status.HTTP_302_FOUND,
+        headers={"Set-Cookie": f"session:{session_id}"},
+    )
 
 
 @router.get("/register")
-def register_view(request: Request):
-    pass
+def register_page(request: Request):
+    return templates.TemplateResponse("register.html", {"request": request})
+
+
+@router.get("/login")
+def login_page(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
 
 
 @router.post("/login")
-def login(request: RegisterUserRequest):
+async def login(request: Request):
+    form_data = await request.form()
+    username = form_data.get("username")
+    password = form_data.get("password")
+
     users = CRUD().with_table("users")
-    user = users.lookup_user(request.username)
+    user = users.lookup_user(username)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="username does not exist"
         )
-    if not user["password"] == request.password:
+    if not security.verify_password(password, user["password"]):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="password is not correct"
         )
