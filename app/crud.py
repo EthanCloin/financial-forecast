@@ -1,5 +1,5 @@
 from datetime import datetime
-from time import timezone
+import security
 from tinydb import Query, TinyDB
 from config import Settings
 from uuid import uuid4
@@ -65,15 +65,25 @@ class CRUD:
         if self.table:
             self.db = self.table
         session_id = str(uuid4())
-        self.db.insert(
-            {
-                "user_id": user_id,
-                "session_id": session_id,
-                "created": str(datetime.utcnow()),
-                "accessed": str(datetime.utcnow()),
-            }
-        )
-        return session_id
+        new_session = {
+            "user_id": user_id,
+            "session_id": session_id,
+        }
+
+        new_session = security.add_new_session_times(new_session)
+        self.db.insert(new_session)
+        return new_session
+
+    def get_user_from_session(self, session_id):
+        if not self.db:
+            self.init_db
+
+        users = self.db.table("users")
+        sessions = self.db.table("sessions")
+
+        cur_session = sessions.get(Query().session_id == session_id)
+        cur_user = users.get(Query().id == cur_session["user_id"])
+        return cur_user
 
     @property
     def init_db(self):
@@ -106,6 +116,8 @@ def main():
             "debts": [{"name": "total", "balance": 12000, "min_monthly": 300}],
         }
     )
+    # sessions = my_db.table("sessions")
+    # sessions.insert({})
 
 
 if __name__ == "__main__":

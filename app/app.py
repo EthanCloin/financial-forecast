@@ -4,7 +4,7 @@ primary entry point serving fastapi app via uvicorn
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
-from config import Settings, APP_DIR
+from config import Settings
 from routes import router
 
 settings = Settings()

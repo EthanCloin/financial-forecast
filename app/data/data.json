@@ -1,16 +1,90 @@
 {
-    "_default": {
-        "1": {
-            "accessed": "2023-12-31 04:10:18.264156",
-            "created": "2023-12-31 04:10:18.264133",
-            "session_id": "9b618d7f-c2d1-4974-ac5f-89ed0ea85db3",
+    "_default": {},
+    "sessions": {
+        "1": {},
+        "10": {
+            "created": "2024-01-01T22:03:41.641938+00:00",
+            "expires": "2024-01-03T22:03:41.641938+00:00",
+            "modified": "2024-01-01T22:03:41.641938+00:00",
+            "session_id": "75a916e4-91be-4aec-8c66-2d1b705a3848",
+            "user_id": "ethan"
+        },
+        "11": {
+            "created": "2024-01-01T22:03:46.116481+00:00",
+            "expires": "2024-01-03T22:03:46.116481+00:00",
+            "modified": "2024-01-01T22:03:46.116481+00:00",
+            "session_id": "9ef69d62-68ba-44ea-b7da-5ce155b2f8d0",
+            "user_id": "ethan"
+        },
+        "12": {
+            "created": "2024-01-01T22:05:17.563243+00:00",
+            "expires": "2024-01-03T22:05:17.563243+00:00",
+            "modified": "2024-01-01T22:05:17.563243+00:00",
+            "session_id": "c481f749-41a4-485c-87e4-55dbcaa77996",
+            "user_id": "ethan"
+        },
+        "13": {
+            "created": "2024-01-01T22:05:22.477668+00:00",
+            "expires": "2024-01-03T22:05:22.477668+00:00",
+            "modified": "2024-01-01T22:05:22.477668+00:00",
+            "session_id": "f8805421-ea1e-4d66-ae4b-e9073737f66a",
             "user_id": "ethan"
         },
         "2": {
-            "accessed": "2023-12-31 04:25:38.160133",
-            "created": "2023-12-31 04:25:38.160089",
-            "session_id": "f6fa7dbb-d14f-4e41-b0f9-b9e969f16099",
-            "user_id": "4dcef145-f1db-4555-b742-93f913eeec48"
+            "created": "2024-01-01T21:16:51.187128+00:00",
+            "expires": "2024-01-03T21:16:51.187128+00:00",
+            "modified": "2024-01-01T21:16:51.187128+00:00",
+            "session_id": "ac2458d8-1391-4351-8571-46ffe5f532d7",
+            "user_id": "ethan"
+        },
+        "3": {
+            "created": "2024-01-01T21:24:55.248994+00:00",
+            "expires": "2024-01-03T21:24:55.248994+00:00",
+            "modified": "2024-01-01T21:24:55.248994+00:00",
+            "session_id": "40e433cd-11d9-4d0d-9c25-c4a23b60be83",
+            "user_id": "ethan"
+        },
+        "4": {
+            "created": "2024-01-01T21:29:19.451008+00:00",
+            "expires": "2024-01-03T21:29:19.451008+00:00",
+            "modified": "2024-01-01T21:29:19.451008+00:00",
+            "session_id": "2486bcfe-2a99-4aec-bc98-70dc3dea00af",
+            "user_id": "ethan"
+        },
+        "5": {
+            "created": "2024-01-01T21:45:37.368590+00:00",
+            "expires": "2024-01-03T21:45:37.368590+00:00",
+            "modified": "2024-01-01T21:45:37.368590+00:00",
+            "session_id": "8666c8f3-dcc0-43f9-9ea7-6678ad85bf4d",
+            "user_id": "ethan"
+        },
+        "6": {
+            "created": "2024-01-01T21:55:05.521303+00:00",
+            "expires": "2024-01-03T21:55:05.521303+00:00",
+            "modified": "2024-01-01T21:55:05.521303+00:00",
+            "session_id": "5507420b-50f5-43f3-8f82-b7230d240025",
+            "user_id": "ethan"
+        },
+        "7": {
+            "created": "2024-01-01T21:59:02.048366+00:00",
+            "expires": "2024-01-03T21:59:02.048366+00:00",
+            "modified": "2024-01-01T21:59:02.048366+00:00",
+            "session_id": "1637fdc5-2ba4-4c3c-a41d-26b11309ec23",
+            "user_id": "ethan"
+        },
+        "8": {
+            "created": "2024-01-01T22:02:38.719938+00:00",
+            "expires": "2024-01-03T22:02:38.719938+00:00",
+            "modified": "2024-01-01T22:02:38.719938+00:00",
+            "session_id": "0903afe5-5e7a-4ed9-b8a8-288551c479c1",
+            "user_id": "ethan"
+        },
+        "9": {
+            "created": "2024-01-01T22:03:06.914666+00:00",
+            "expires": "2024-01-03T22:03:06.914666+00:00",
+            "modified": "2024-01-01T22:03:06.914666+00:00",
+            "session_id": "6a34b814-4672-4ee8-9707-937674126fd5",
+            "user_id": "ethan"
         }
     },
     "users": {
@@ -38,16 +112,6 @@
             "net_monthly_income": 5000,
             "password": "$pbkdf2-sha256$29000$PgcgxPjf27sXwhjDWOv9Xw$ly31FFuPlaq4V9g7cc8jJkZt2OMbM21nJLgzQkHxFPM",
             "username": "psnethan@gmail.com"
-        },
-        "2": {
-            "id": "1c97536d-b5bb-4d9a-9982-47cea1a5a458",
-            "password": "$pbkdf2-sha256$29000$3bt3zhnjvBfivLcWghDCWA$.FeDB8D9ya60axstlaKCckkQsJzUu7Yt9o7Z5T2bgxk",
-            "username": "new@gmail.com"
-        },
-        "3": {
-            "id": "4dcef145-f1db-4555-b742-93f913eeec48",
-            "password": "$pbkdf2-sha256$29000$IcT433sPQSglpDRGqJXSGg$oU4hYprql3aoUHpEmzYM5ZbIAOgir5g0qfWC9oYL0WA",
-            "username": "another@gmail.com"
         }
     }
 }

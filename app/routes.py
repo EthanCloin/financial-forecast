@@ -16,7 +16,8 @@ _log = logging.getLogger(__name__)
 
 @router.get("/")
 def index(request: Request):
-    return templates.TemplateResponse("shared/_base.html", {"request": request})
+    # return templates.TemplateResponse("shared/_base.html", {"request": request})
+    return RedirectResponse("/login", status.HTTP_302_FOUND)
 
 
 @router.post("/register")
@@ -28,6 +29,8 @@ async def register(request: Request):
     # check if username already exists in db
     _log.debug("beginning register user: %s", request)
     users = CRUD().with_table("users")
+    # TODO: in addition to this, have an htmx check on the username input field to attempt
+    #   lookup and have feedback recommending user to switch to login 'username already exists'
     user = users.lookup_user(username)
     if user:
         # redirect payload to login route
@@ -37,12 +40,11 @@ async def register(request: Request):
     # else add to users table and create session
     user = users.insert_user(username, password)
     sessions = CRUD().with_table("sessions")
-    session_id = sessions.create_session(user["id"])
-    return RedirectResponse(
-        "/",
-        status_code=status.HTTP_302_FOUND,
-        headers={"Set-Cookie": f"session:{session_id}"},
-    )
+    session = sessions.create_session(user["id"])
+
+    response = RedirectResponse("/me", status.HTTP_302_FOUND)
+    response.set_cookie("session", session["session_id"], max_age=3600 * 24 * 2)
+    return response
 
 
 @router.get("/register")
@@ -73,17 +75,37 @@ async def login(request: Request):
         )
 
     sessions = CRUD().with_table("sessions")
-    session_id = sessions.create_session(user["id"])
-    return RedirectResponse(
-        "/",
+    session = sessions.create_session(user["id"])
+    response = RedirectResponse(
+        "/me",
         status_code=status.HTTP_302_FOUND,
-        headers={"Set-Cookie": f"session:{session_id}"},
     )
+    response.set_cookie("session", session["session_id"], max_age=3600 * 24 * 2)
+    return response
 
 
 @router.get("/welcome")
 def welcome(request: Request):
     return templates.TemplateResponse("welcome.html", {"request": request})
+
+
+@router.get("/me")
+async def user_profile(request: Request):
+    session_id = request.cookies.get("session")
+    if not session_id:
+        return RedirectResponse("/login", status_code=status.HTTP_302_FOUND)
+
+    current_user = CRUD().get_user_from_session(session_id)
+
+    return templates.TemplateResponse(
+        "profile.html",
+        {
+            "request": request,
+            "username": current_user["username"],
+            "password": current_user["password"],
+            "session_id": session_id,
+        },
+    )
 
 
 @router.get("/net-worth")
