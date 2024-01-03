@@ -1,7 +1,8 @@
-from fastapi import APIRouter, HTTPException, Request, status
+from fastapi import APIRouter, HTTPException, Request, status, Depends
 from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-from models import RecoveryPlanRequest, RecoveryPlanResponse, RegisterUserRequest
+from fastapi.security import APIKeyCookie
+from models import RecoveryPlanRequest, RecoveryPlanResponse
 from crud import CRUD
 from config import Settings
 import security
@@ -11,7 +12,10 @@ import logging
 settings = Settings()
 templates = Jinja2Templates(directory=settings.TEMPLATE_DIR)
 router = APIRouter()
+# using Depends(cookie_scheme) will check the request for a cookie named 'session'
+cookie_scheme = APIKeyCookie(name="session")
 _log = logging.getLogger(__name__)
+TWO_DAYS = 3600 * 24 * 2
 
 
 @router.get("/")
@@ -28,22 +32,21 @@ async def register(request: Request):
 
     # check if username already exists in db
     _log.debug("beginning register user: %s", request)
-    users = CRUD().with_table("users")
+    db = CRUD()
     # TODO: in addition to this, have an htmx check on the username input field to attempt
     #   lookup and have feedback recommending user to switch to login 'username already exists'
-    user = users.lookup_user(username)
+    user = db.lookup_user(username)
     if user:
         # redirect payload to login route
         # would be nice to autofill the login page with provided credentials
         return RedirectResponse("/login", status_code=status.HTTP_302_FOUND)
 
     # else add to users table and create session
-    user = users.insert_user(username, password)
-    sessions = CRUD().with_table("sessions")
-    session = sessions.create_session(user["id"])
+    user = db.insert_user(username, password)
+    session = db.create_session(user.id)
 
     response = RedirectResponse("/me", status.HTTP_302_FOUND)
-    response.set_cookie("session", session["session_id"], max_age=3600 * 24 * 2)
+    response.set_cookie("session", session.session_id, max_age=TWO_DAYS)
     return response
 
 
@@ -63,24 +66,23 @@ async def login(request: Request):
     username = form_data.get("username")
     password = form_data.get("password")
 
-    users = CRUD().with_table("users")
-    user = users.lookup_user(username)
+    db = CRUD()
+    user = db.lookup_user(username)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="username does not exist"
         )
-    if not security.verify_password(password, user["password"]):
+    if not security.verify_password(password, user.password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="password is not correct"
         )
 
-    sessions = CRUD().with_table("sessions")
-    session = sessions.create_session(user["id"])
+    session = db.create_session(user.id)
     response = RedirectResponse(
         "/me",
         status_code=status.HTTP_302_FOUND,
     )
-    response.set_cookie("session", session["session_id"], max_age=3600 * 24 * 2)
+    response.set_cookie("session", session.session_id, max_age=TWO_DAYS)
     return response
 
 
@@ -90,8 +92,7 @@ def welcome(request: Request):
 
 
 @router.get("/me")
-async def user_profile(request: Request):
-    session_id = request.cookies.get("session")
+async def user_profile(request: Request, session_id: str = Depends(cookie_scheme)):
     if not session_id:
         return RedirectResponse("/login", status_code=status.HTTP_302_FOUND)
 
@@ -101,8 +102,8 @@ async def user_profile(request: Request):
         "profile.html",
         {
             "request": request,
-            "username": current_user["username"],
-            "password": current_user["password"],
+            "username": current_user.username,
+            "password": current_user.password,
             "session_id": session_id,
         },
     )
@@ -119,7 +120,7 @@ async def survey_net_worth(request: Request):
 
 
 @router.get("/income")
-def intro_income(request: Request):
+def income_page(request: Request):
     return templates.TemplateResponse("income.html", {"request": request})
 
 
@@ -128,25 +129,26 @@ async def survey_income(request: Request):
     return templates.TemplateResponse("income-survey.html", {"request": request})
 
 
-@router.get("/ethantest")
-async def ethan_test(request: Request):
-    """just trying to get stuff out the tinydb"""
-    db = CRUD().with_table("users")
-    ethan = db.get_ethan_user()
-    print(ethan)
+# TODO: delete this once i have made real authed pages, keeping for now for reference
+# @router.get("/ethantest")
+# async def ethan_test(request: Request):
+#     """just trying to get stuff out the tinydb"""
+#     db = CRUD().with_table("users")
+#     ethan = db.get_ethan_user()
+#     print(ethan)
 
-    def format_dollar_amount(cents: int) -> str:
-        return "${dollar_amount:.2f}".format(dollar_amount=round(cents / 100, 2))
+#     def format_dollar_amount(cents: int) -> str:
+#         return "${dollar_amount:.2f}".format(dollar_amount=round(cents / 100, 2))
 
-    return templates.TemplateResponse(
-        "user-data.html",
-        {
-            "request": request,
-            "username": ethan["id"],
-            "accounts": ethan["balances"],
-            "format_dollar_amount": format_dollar_amount,
-        },
-    )
+#     return templates.TemplateResponse(
+#         "user-data.html",
+#         {
+#             "request": request,
+#             "username": ethan["id"],
+#             "accounts": ethan["balances"],
+#             "format_dollar_amount": format_dollar_amount,
+#         },
+#     )
 
 
 @router.post(

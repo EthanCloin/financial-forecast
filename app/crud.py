@@ -1,5 +1,4 @@
-from datetime import datetime
-import security
+from db_models import User, Session
 from tinydb import Query, TinyDB
 from config import Settings
 from uuid import uuid4
@@ -16,74 +15,54 @@ class CRUD:
         self.query = Query()
         self.table = table
 
-    def get_all_my_data(self):
-        if not self.db:
-            self.init_db
-        if self.table:
-            self.db = self.table
-        return self.db.all()
-
-    def get_ethan_user(self):
-        if not self.db:
-            self.init_db
-        if self.table:
-            self.db = self.table
-        return self.db.get(Query().id == "ethan")
-
-    def lookup_user(self, username: str):
+    def lookup_user(self, username: str) -> User | None:
         """return user if username present in users table"""
         if not self.db:
             self.init_db
-        if self.table == "users":
-            self.db = self.table
-        else:
-            _log.error(
-                "Attempted to lookup user without providing proper table. Expected 'users' got %s",
-                self.table,
-            )
 
-        return self.table.get(Query().username == username)
+        users = self.db.table("users")
+        user_db = users.get(Query().username == username)
+        if user_db:
+            return User.model_validate(user_db)
+        return None
 
-    def insert_user(self, username: str, password: str):
+    def insert_user(self, username: str, password: str) -> User:
         if not self.db:
             self.init_db
-        if self.table:
-            self.db = self.table
-        user = {
-            "id": str(uuid4()),
-            "username": username,
-            # this password should be sha256 encrypted on the frontend
-            "password": password,
-        }
-        _log.debug("Inserting new user %s", user)
-        self.db.insert(user)
+
+        user = User(username=username, password=password)
+        _log.debug("Inserting new user %s", user.model_dump())
+
+        users = self.db.table("users")
+        users.insert(user.model_dump())
         return user
 
-    def create_session(self, user_id):
+    def create_session(self, user_id) -> Session:
         if not self.db:
             self.init_db
-        if self.table:
-            self.db = self.table
-        session_id = str(uuid4())
-        new_session = {
-            "user_id": user_id,
-            "session_id": session_id,
-        }
 
-        new_session = security.add_new_session_times(new_session)
-        self.db.insert(new_session)
-        return new_session
+        session = Session(user_id=user_id)
+        sessions = self.db.table("sessions")
 
-    def get_user_from_session(self, session_id):
+        _log.debug("Inserting new session %s", session.model_dump())
+        sessions.insert(session.model_dump())
+        return session
+
+    def get_user_from_session(self, session_id) -> User | None:
         if not self.db:
             self.init_db
 
         users = self.db.table("users")
         sessions = self.db.table("sessions")
 
-        cur_session = sessions.get(Query().session_id == session_id)
-        cur_user = users.get(Query().id == cur_session["user_id"])
-        return cur_user
+        db_session = sessions.get(Query().session_id == session_id)
+        if db_session:
+            cur_session = Session.model_validate(db_session)
+            db_user = users.get(Query().id == cur_session.user_id)
+            if db_user:
+                cur_user = User.model_validate(db_user)
+                return cur_user
+        return None
 
     @property
     def init_db(self):
@@ -107,7 +86,7 @@ def main():
     users.truncate()
     users.insert(
         {
-            "id": "ethan",
+            "id": "c05f1901-acc9-464a-ae69-4333975c23a4",
             "username": "psnethan@gmail.com",
             "password": "$pbkdf2-sha256$29000$PgcgxPjf27sXwhjDWOv9Xw$ly31FFuPlaq4V9g7cc8jJkZt2OMbM21nJLgzQkHxFPM",
             "balances": [{"name": "emergency", "balance": 1000}],
@@ -116,7 +95,8 @@ def main():
             "debts": [{"name": "total", "balance": 12000, "min_monthly": 300}],
         }
     )
-    # sessions = my_db.table("sessions")
+    sessions = my_db.table("sessions")
+    sessions.truncate()
     # sessions.insert({})
 
 
