@@ -3,10 +3,10 @@ centralized location for fastapi properties and directory config
 """
 from pathlib import Path
 from typing import Any
+import logging
 
 from fastapi.responses import HTMLResponse
 from pydantic_settings import BaseSettings
-from typing import Any
 
 APP_DIR = Path(__file__).resolve().parent
 
@@ -16,6 +16,8 @@ class Settings(BaseSettings):
 
     STATIC_DIR: Path = APP_DIR / "static"
     TEMPLATE_DIR: Path = APP_DIR / "templates"
+    DATA_DIR: Path = APP_DIR / "data"
+    LOG_FILE: Path = APP_DIR / "logs" / "all.log"
 
     FASTAPI_PROPERTIES: dict[str, Any] = {
         "title": "Simple Site",
@@ -24,7 +26,9 @@ class Settings(BaseSettings):
         "default_response_class": HTMLResponse,  # Change default from JSONResponse
     }
 
-    DISABLE_DOCS: bool = True
+    DISABLE_DOCS: bool = False
+
+    logging.basicConfig(filename=LOG_FILE, level="DEBUG")
 
     @property
     def fastapi_kwargs(self) -> dict[str, Any]:

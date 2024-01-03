@@ -1,0 +1,60 @@
+{
+    "_default": {},
+    "sessions": {
+        "1": {
+            "created": "2024-01-03T01:26:55.379038+00:00",
+            "expires": "2024-01-05T01:26:55.379294+00:00",
+            "modified": "2024-01-03T01:26:55.379287+00:00",
+            "session_id": "7632b847-82f5-4771-a1bf-5c6a017b0dcf",
+            "user_id": "c05f1901-acc9-464a-ae69-4333975c23a4"
+        },
+        "2": {
+            "created": "2024-01-03T01:26:55.379038+00:00",
+            "expires": "2024-01-05T01:26:55.379294+00:00",
+            "modified": "2024-01-03T01:26:55.379287+00:00",
+            "session_id": "7632b847-82f5-4771-a1bf-5c6a017b0dcf",
+            "user_id": "c05f1901-acc9-464a-ae69-4333975c23a4"
+        },
+        "3": {
+            "created": "2024-01-03T01:29:04.544889+00:00",
+            "expires": "2024-01-05T01:29:04.545120+00:00",
+            "modified": "2024-01-03T01:29:04.545113+00:00",
+            "session_id": "394e45ca-1901-4428-8e15-0c618c5914ad",
+            "user_id": "c05f1901-acc9-464a-ae69-4333975c23a4"
+        },
+        "4": {
+            "created": "2024-01-03T01:44:19.318247+00:00",
+            "expires": "2024-01-05T01:44:19.318476+00:00",
+            "modified": "2024-01-03T01:44:19.318469+00:00",
+            "session_id": "ace746ec-84f4-4c44-bf1f-48202f44c44f",
+            "user_id": "c05f1901-acc9-464a-ae69-4333975c23a4"
+        }
+    },
+    "users": {
+        "1": {
+            "balances": [
+                {
+                    "balance": 1000,
+                    "name": "emergency"
+                }
+            ],
+            "debts": [
+                {
+                    "balance": 12000,
+                    "min_monthly": 300,
+                    "name": "total"
+                }
+            ],
+            "id": "c05f1901-acc9-464a-ae69-4333975c23a4",
+            "needs": [
+                {
+                    "amount": 2000,
+                    "name": "total"
+                }
+            ],
+            "net_monthly_income": 5000,
+            "password": "$pbkdf2-sha256$29000$PgcgxPjf27sXwhjDWOv9Xw$ly31FFuPlaq4V9g7cc8jJkZt2OMbM21nJLgzQkHxFPM",
+            "username": "psnethan@gmail.com"
+        }
+    }
+}

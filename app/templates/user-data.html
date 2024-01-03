@@ -1,0 +1,37 @@
+{% extends "/shared/_base.html" %} {% block content %}
+<div class="flex flex-col h-full max-w-screen-lg bg-slate-50">
+  <h1 class="self-center text-3xl font-bold">Thanks for Sharing!</h1>
+  <p class="text-xl">Let's make sure everything looks right.</p>
+  <!-- we have users.balances,debts,needs,net_monthly_income -->
+  <div class="w-max flex flex-col">
+    <p
+      class="self-center text-center w-10/12 p-3 my-3 overflow-auto text-xl font-bold rounded-lg bg-slate-50 min-h-1/3"
+    >
+      Personal Finances for {{username.title()}}
+    </p>
+    <!-- summarize balances -->
+    <div>
+      {% for account in accounts %}
+      <div
+        class="self-center w-10/12 p-3 mt-0.5 mb-5 overflow-auto rounded-md bg-slate-50 min-h-1/3"
+      >
+        <label
+          for="account-{{account.name}}"
+          class="self-center w-screen h-12 text-xl text-black"
+          >Account: {{account.name.title()}}</label
+        >
+        <input
+          id="account-{{account.name.title()}}"
+          type="text"
+          class="w-full h-12 p-2 border border-lime-900 focus:outline-lime-500"
+          validationType="currency"
+          value="{{format_dollar_amount(account.balance)}}"
+          disabled
+        />
+        {% endfor %}
+      </div>
+    </div>
+    <a href="/net-worth">Get Started</a>
+  </div>
+  {% endblock %}
+</div>

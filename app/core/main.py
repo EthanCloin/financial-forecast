@@ -18,73 +18,88 @@ def main():
     pprint(action_plan)
 
 
-def get_net_worth():
-    # Banking
-    checking = {"name": "checking", "balance": 200000}
-    savings = {"name": "savings", "balance": 800000}
-    emergency_fund = {"name": "emergency_fund", "balance": 1000000, "goal": 10000000}
-    banking = [checking, savings, emergency_fund]
+def get_net_worth(strategy="default"):
+    net_worth = {}
+    if strategy == "debt_recovery":
+        from debt_recovery import get_banking_balances, get_debts
+        banking = get_banking_balances()
+        debt  = get_debts()
+        net_worth = {
+            "banking": banking,
+            "debt": debt,
+        }
 
-    # Retirement
-    company_401k = 500000
-    roth_ira = 1200000
-    retirement = {"balance": company_401k + roth_ira}
+    else:
+        # Banking
+        checking = {"name": "checking", "balance": 200000}
+        savings = {"name": "savings", "balance": 800000}
+        emergency_fund = {"name": "emergency_fund", "balance": 1000000, "goal": 10000000}
+        banking = [checking, savings, emergency_fund]
 
-    # Investment
-    investment = {"balance": 200000}
+        # Retirement
+        company_401k = 500000
+        roth_ira = 1200000
+        retirement = {"balance": company_401k + roth_ira}
 
-    # Debt
-    car_loan = {"name": "car_loan", "balance": 1618428, "monthly_payment": 44956}
-    student_loan = {"name": "student_loan", "balance": 753174, "monthly_payment": 6276}
+        # Investment
+        investment = {"balance": 200000}
 
-    credit_cards = {
-        "name": "credit_cards",
-        "balance": 20000,
-        "monthly_payment": 2000,
-        "is_high_interest": True,
-    }
+        # Debt
+        car_loan = {"name": "car_loan", "balance": 1618428, "monthly_payment": 44956}
+        student_loan = {"name": "student_loan", "balance": 753174, "monthly_payment": 6276}
 
-    more_credit_cards = {
-        "name": "more_credit_cards",
-        "balance": 100000,
-        "monthly_payment": 10000,
-        "is_high_interest": True,
-    }
+        credit_cards = {
+            "name": "credit_cards",
+            "balance": 20000,
+            "monthly_payment": 2000,
+            "is_high_interest": True,
+        }
 
-    # NOTE: Currently combining minimum monthlypayment
-    debt = [
-        car_loan,
-        student_loan,
-        credit_cards,
-        # more_credit_cards,
-    ]
+        more_credit_cards = {
+            "name": "more_credit_cards",
+            "balance": 100000,
+            "monthly_payment": 10000,
+            "is_high_interest": True,
+        }
 
-    net_worth = {
-        "banking": banking,
-        "retirement": retirement,
-        "investment": investment,
-        "debt": debt,
-    }
+        # NOTE: Currently combining minimum monthlypayment
+        debt = [
+            car_loan,
+            student_loan,
+            credit_cards,
+            # more_credit_cards,
+        ]
+
+        net_worth = {
+            "banking": banking,
+            "retirement": retirement,
+            "investment": investment,
+            "debt": debt,
+        }
 
     logging.info(f"generated net_worth: {pformat(net_worth)}")
-
     return net_worth
 
 
-def get_income():
-    # Gross Annual
-    gross_annual = 7500000
-    # Retirement Contribution
-    contribution_401k = 0.08
-    # Net Monthly
-    net_monthly = 480000
+def get_income(strategy="default"):
+    income = {}
+    if strategy == "debt_recovery":
+        from debt_recovery import get_income
+        income = get_income()
+    else:
+        # Gross Annual
+        gross_annual = 7500000
+        # Retirement Contribution
+        contribution_401k = 0.08
+        # Net Monthly
+        net_monthly = 480000
 
-    income = {
-        "gross_annual": gross_annual,
-        "401k_monthly_contribution": round((contribution_401k * gross_annual) / 12),
-        "401k_percent_contribution": contribution_401k,
-        "net_monthly": net_monthly,
-    }
+        income = {
+            "gross_annual": gross_annual,
+            "401k_monthly_contribution": round((contribution_401k * gross_annual) / 12),
+            "401k_percent_contribution": contribution_401k,
+            "net_monthly": net_monthly,
+        }
     logging.info(f"generated income: {pformat(income)}")
     return income
 

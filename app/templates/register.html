@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="foo" />
+    <meta name="keywords" content="foo, bar" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', path='css/main.css') }}"
+      type="text/css"
+    />
+    <title>Register</title>
+  </head>
+  <body>
+    <h1 class="h-12 mt-8 text-3xl font-bold text-center text-green-700">
+      Welcome to Financial Forecast
+    </h1>
+    <form
+      action="/register"
+      method="post"
+      class="flex flex-col items-center justify-center w-screen h-full my-8"
+    >
+      <input
+        name="username"
+        type="text"
+        placeholder="your@email.com"
+        autocomplete="username"
+        class="w-2/3 h-12 p-2 border border-lime-900 focus:outline-lime-500"
+      />
+      <input
+        name="password"
+        type="password"
+        placeholder="password"
+        class="w-2/3 h-12 p-2 mb-6 border border-lime-900 focus:outline-lime-500"
+      />
+      <button
+        type="submit"
+        class="self-center w-1/3 text-xl text-center text-white bg-green-700 border rounded-lg border-lime-900 hover:bg-green-600"
+      >
+        Register
+      </button>
+      <p class="self-center w-2/3 mt-7 text-md">
+        Already used Financial Forecast?
+      </p>
+      <a href="/login" class="italic text-green-800">Login here!</a>
+    </form>
+  </body>
+</html>

@@ -21,3 +21,10 @@ fastapi + jinja html templates to collect user info
 Incorporate the action plan logic into an API or Lambda and build a frontend.
 
 Include logic to provide an alternative action plan to become debt-free.
+
+# Dev Notes
+to run the server locally, you can either run the app.py file, or use this cli command:
+`uvicorn app:app --reload --reload-include \*.html`
+
+to use any new tailwind classes, you will also need to run tailwind:
+`tailwindcss -i ./app/static/src/tw.css -o ./app/static/css/main.css --watch`
