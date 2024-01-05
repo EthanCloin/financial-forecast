@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Request, status, Depends
 from fastapi.responses import JSONResponse, RedirectResponse
-from fastapi.templating import Jinja2Templates
+from jinja2_fragments.fastapi import Jinja2Blocks
 from fastapi.security import APIKeyCookie
 from models import RecoveryPlanRequest, RecoveryPlanResponse
 from crud import CRUD
@@ -10,7 +10,7 @@ import logging
 
 
 settings = Settings()
-templates = Jinja2Templates(directory=settings.TEMPLATE_DIR)
+templates = Jinja2Blocks(directory=settings.TEMPLATE_DIR)
 router = APIRouter()
 # using Depends(cookie_scheme) will check the request for a cookie named 'session'
 cookie_scheme = APIKeyCookie(name="session")
@@ -28,7 +28,6 @@ def index(request: Request):
 async def register(request: Request):
     form_data = await request.form()
     username = form_data.get("username")
-    password = security.encrypt_password(form_data.get("password"))
 
     # check if username already exists in db
     _log.debug("beginning register user: %s", request)
@@ -39,14 +38,35 @@ async def register(request: Request):
     if user:
         # redirect payload to login route
         # would be nice to autofill the login page with provided credentials
-        return RedirectResponse("/login", status_code=status.HTTP_302_FOUND)
+        return templates.TemplateResponse(
+            "register.html",
+            {
+                "request": request,
+                "username": username,
+                "status": "username_exists",
+                "popup_text": "This username already exists!",
+            },
+        )
+    provided = form_data.get("password")
 
-    # else add to users table and create session
-    user = db.insert_user(username, password)
+    # just don't accept empty password for now
+    if not provided:
+        return templates.TemplateResponse(
+            "register.html",
+            {
+                "request": request,
+                "username": username,
+                "status": "bad_password",
+                "popup_text": "Must provide a valid password!",
+            },
+        )
+
+    enc_password = security.encrypt_password(provided)
+    user = db.insert_user(username, enc_password)
     session = db.create_session(user.id)
-
     response = RedirectResponse("/me", status.HTTP_302_FOUND)
     response.set_cookie("session", session.session_id, max_age=TWO_DAYS)
+
     return response
 
 
@@ -62,6 +82,13 @@ def login_page(request: Request):
 
 @router.post("/login")
 async def login(request: Request):
+    """
+    for returning users
+
+    valid credentials redirects to /me
+    invalid returns updated login page with message
+    """
+
     form_data = await request.form()
     username = form_data.get("username")
     password = form_data.get("password")
@@ -69,12 +96,24 @@ async def login(request: Request):
     db = CRUD()
     user = db.lookup_user(username)
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="username does not exist"
+        return templates.TemplateResponse(
+            "login.html",
+            {
+                "request": request,
+                "status": "bad_username",
+                "username": username,
+                "popup_text": "This username doesn't exist!",
+            },
         )
     if not security.verify_password(password, user.password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="password is not correct"
+        return templates.TemplateResponse(
+            "login.html",
+            {
+                "request": request,
+                "status": "bad_password",
+                "username": username,
+                "popup_text": "Your password is not correct, try again!",
+            },
         )
 
     session = db.create_session(user.id)
@@ -93,6 +132,9 @@ def welcome(request: Request):
 
 @router.get("/me")
 async def user_profile(request: Request, session_id: str = Depends(cookie_scheme)):
+    # TODO: determine what the issue is with cookie caching
+    #   seems to be grabbing old users tho i'm not exactly following
+    #   a typical user flow rn
     if not session_id:
         return RedirectResponse("/login", status_code=status.HTTP_302_FOUND)
 

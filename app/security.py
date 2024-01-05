@@ -7,4 +7,4 @@ def encrypt_password(plain_password: str) -> str:
 
 
 def verify_password(provided: str, stored_hash: str) -> bool:
-    return pbkdf2_sha256.verify(provided, stored_hash)
+    return provided and pbkdf2_sha256.verify(provided, stored_hash)
