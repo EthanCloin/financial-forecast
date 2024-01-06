@@ -15,17 +15,17 @@
   {% endif %}
 
   {% if status == "bad_username" %}
-  <input name="username" value="{{username if username else ''}}" type="text" placeholder="your@email.com"
+  <input required name="username" value="{{username if username else ''}}" type="text" placeholder="your@email.com"
     autocomplete="username" class="w-1/2 h-12 p-2 border lg:w-1/3 border-rose-600 focus:outline-rose-400" />
   {% else %}
-  <input name="username" value="{{username if username else ''}}" type="text" placeholder="your@email.com"
+  <input required name="username" value="{{username if username else ''}}" type="text" placeholder="your@email.com"
     autocomplete="username" class="w-1/2 h-12 p-2 border lg:w-1/3 border-lime-900 focus:outline-lime-500" />
   {% endif %}
   {% if status == "bad_password" %}
-  <input id="password" name="password" type="password" placeholder="password" autocomplete="current-password"
+  <input required id="password" name="password" type="password" placeholder="password" autocomplete="current-password"
     class="w-1/2 h-12 p-2 mb-6 border lg:w-1/3 border-rose-600 focus:outline-rose-400" />
   {% else %}
-  <input name="password" type="password" placeholder="password" autocomplete="current-password"
+  <input required name="password" type="password" placeholder="password" autocomplete="current-password"
     class="w-1/2 h-12 p-2 border lg:w-1/3 border-lime-900 focus:outline-lime-500" />
   {% endif %}
   <button type="submit"

@@ -13,13 +13,13 @@
   </div>
   {% endif %}
   {% if status == "username_exists" %}
-  <input name="username" value="{{username if username else ''}}" type="text" placeholder="your@email.com"
+  <input required name="username" value="{{username if username else ''}}" type="text" placeholder="your@email.com"
     autocomplete="username" class="w-1/2 h-12 p-2 border md:w-1/3 border-rose-600 focus:outline-rose-400" />
   {% else %}
-  <input name="username" value="{{username if username else ''}}" type="text" placeholder="your@email.com"
+  <input required name="username" value="{{username if username else ''}}" type="text" placeholder="your@email.com"
     autocomplete="username" class="w-1/2 h-12 p-2 border md:w-1/3 border-lime-900 focus:outline-lime-500" />
   {% endif %}
-  <input name="password" type="password" placeholder="password" autocomplete="current-password"
+  <input required name="password" type="password" placeholder="password" autocomplete="current-password"
     class="w-1/2 h-12 p-2 mb-6 border md:w-1/3 border-lime-900 focus:outline-lime-500" />
   <button type="submit"
     class="self-center w-1/2 h-12 text-xl text-center text-white bg-green-700 border rounded-lg md:w-1/3 border-lime-900 hover:bg-green-600">
