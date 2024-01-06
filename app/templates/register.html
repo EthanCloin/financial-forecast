@@ -1,72 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="foo" />
-    <meta name="keywords" content="foo, bar" />
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', path='css/main.css') }}"
-      type="text/css"
-    />
-    <title>Register</title>
-  </head>
-  <body>
-    <h1 class="h-12 mt-8 text-3xl font-bold text-center text-green-700">
-      Welcome to Financial Forecast
-    </h1>
-    <form
-    action="/register"
-    method="post"
-    class="flex flex-col items-center justify-center w-screen h-full my-8"
-    >
-      {% if popup_text and username %}
-      <div class="flex flex-row justify-between w-1/2 h-16 p-2 m-2 align-middle border rounded-md md:w-1/3 bg-slate-200 border-slate-400">
-        <p class="self-center w-1/2 text-4xl text-center text-yellow-500 md:w-1/3">&#9888</p>
-        <p class="self-center w-full text-sm italic text-left text-black">{{popup_text}}</p>
-      </div>
-      {% endif %}
-      {% if status == "username_exists" %}
-      <input
-        name="username"
-        value="{{username if username else ''}}"
-        type="text"
-        placeholder="your@email.com"
-        autocomplete="username"
-        class="w-1/2 h-12 p-2 border md:w-1/3 border-rose-600 focus:outline-rose-400"
-      />
-      {% else %}
-      <input
-        name="username"
-        value="{{username if username else ''}}"
-        type="text"
-        placeholder="your@email.com"
-        autocomplete="username"
-        class="w-1/2 h-12 p-2 border md:w-1/3 border-lime-900 focus:outline-lime-500"
-      />
-      {% endif %}
-      <input
-        name="password"
-        type="password"
-        placeholder="password"
-        autocomplete="current-password"
-        class="w-1/2 h-12 p-2 mb-6 border md:w-1/3 border-lime-900 focus:outline-lime-500"
-      />
-      <button
-        type="submit"
-        class="self-center w-1/2 h-12 text-xl text-center text-white bg-green-700 border rounded-lg md:w-1/3 border-lime-900 hover:bg-green-600"
-      >
-        Register
-      </button>
-      <p class="self-center w-1/2 text-center md:w-1/3 mt-7 text-md">
-        Already have an account?
-      </p>
-      <a
-        href="/login"
-        class="self-center w-1/2 italic text-center text-green-800 md:w-1/3 text-md"
-        >Login instead!</a
-      >
-    </form>
-  </body>
-</html>
+{% extends "/shared/_base.html" %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<h1 class="h-12 mt-8 text-3xl font-bold text-center text-green-700">
+  Welcome to Financial Forecast
+</h1>
+<form action="/register" method="post" class="flex flex-col items-center justify-center w-screen h-full my-8">
+  {% if popup_text and username %}
+  <div
+    class="flex flex-row justify-between w-1/2 h-16 p-2 m-2 align-middle border rounded-md md:w-1/3 bg-slate-200 border-slate-400">
+    <p class="self-center w-1/2 text-4xl text-center text-yellow-500 md:w-1/3">&#9888</p>
+    <p class="self-center w-full text-sm italic text-left text-black">{{popup_text}}</p>
+  </div>
+  {% endif %}
+  {% if status == "username_exists" %}
+  <input name="username" value="{{username if username else ''}}" type="text" placeholder="your@email.com"
+    autocomplete="username" class="w-1/2 h-12 p-2 border md:w-1/3 border-rose-600 focus:outline-rose-400" />
+  {% else %}
+  <input name="username" value="{{username if username else ''}}" type="text" placeholder="your@email.com"
+    autocomplete="username" class="w-1/2 h-12 p-2 border md:w-1/3 border-lime-900 focus:outline-lime-500" />
+  {% endif %}
+  <input name="password" type="password" placeholder="password" autocomplete="current-password"
+    class="w-1/2 h-12 p-2 mb-6 border md:w-1/3 border-lime-900 focus:outline-lime-500" />
+  <button type="submit"
+    class="self-center w-1/2 h-12 text-xl text-center text-white bg-green-700 border rounded-lg md:w-1/3 border-lime-900 hover:bg-green-600">
+    Register
+  </button>
+  <p class="self-center w-1/2 text-center md:w-1/3 mt-7 text-md">
+    Already have an account?
+  </p>
+  <a href="/login" class="self-center w-1/2 italic text-center text-green-800 md:w-1/3 text-md">Login instead!</a>
+</form>
+{% endblock %}
