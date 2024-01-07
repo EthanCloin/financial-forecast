@@ -48,6 +48,8 @@ class CRUD:
         sessions.insert(session.model_dump())
         return session
 
+    # TODO: add a delete_session method
+
     def get_user_from_session(self, session_id) -> User | None:
         if not self.db:
             self.init_db

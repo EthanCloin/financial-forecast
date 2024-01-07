@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Request, status, Depends
+from fastapi import APIRouter, HTTPException, Request, Response, status, Depends
 from fastapi.responses import JSONResponse, RedirectResponse
 from jinja2_fragments.fastapi import Jinja2Blocks
 from fastapi.security import APIKeyCookie
@@ -13,6 +13,7 @@ settings = Settings()
 templates = Jinja2Blocks(directory=settings.TEMPLATE_DIR)
 router = APIRouter()
 # using Depends(cookie_scheme) will check the request for a cookie named 'session'
+# TODO: look into fastapi Session construct for managing user session
 cookie_scheme = APIKeyCookie(name="session")
 _log = logging.getLogger(__name__)
 TWO_DAYS = 3600 * 24 * 2
@@ -122,6 +123,15 @@ async def login(request: Request):
         status_code=status.HTTP_302_FOUND,
     )
     response.set_cookie("session", session.session_id, max_age=TWO_DAYS)
+    return response
+
+
+@router.post("/logout")
+async def logout(request: Request):
+    """drop session cookie and session record, redirect to login"""
+    response = RedirectResponse("/login", status.HTTP_302_FOUND)
+    response.delete_cookie("session")
+    # TODO: delete session record from database
     return response
 
 
