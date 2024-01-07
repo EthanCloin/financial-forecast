@@ -1,6 +1,28 @@
 {
     "_default": {},
-    "sessions": {},
+    "sessions": {
+        "1": {
+            "created": "2024-01-11T01:40:11.860345+00:00",
+            "expires": "2024-01-13T01:40:11.860611+00:00",
+            "modified": "2024-01-11T01:40:11.860603+00:00",
+            "session_id": "219d39db-9448-4cbc-91d4-6302fddff045",
+            "user_id": "fa2cce3f-ec1f-44da-856a-3cf077b8a4c6"
+        },
+        "2": {
+            "created": "2024-01-11T02:16:32.263429+00:00",
+            "expires": "2024-01-13T02:16:32.263714+00:00",
+            "modified": "2024-01-11T02:16:32.263706+00:00",
+            "session_id": "ddcf03df-ea5e-4cc5-ae73-8c4763a5ea38",
+            "user_id": "fa2cce3f-ec1f-44da-856a-3cf077b8a4c6"
+        },
+        "3": {
+            "created": "2024-01-11T03:16:45.636588+00:00",
+            "expires": "2024-01-13T03:16:45.636806+00:00",
+            "modified": "2024-01-11T03:16:45.636799+00:00",
+            "session_id": "ec71769e-5d1a-44de-96c4-f53a3558fc38",
+            "user_id": "fa2cce3f-ec1f-44da-856a-3cf077b8a4c6"
+        }
+    },
     "users": {
         "1": {
             "balances": [
@@ -26,6 +48,24 @@
             "net_monthly_income": 5000,
             "password": "$pbkdf2-sha256$29000$PgcgxPjf27sXwhjDWOv9Xw$ly31FFuPlaq4V9g7cc8jJkZt2OMbM21nJLgzQkHxFPM",
             "username": "psnethan@gmail.com"
+        },
+        "2": {
+            "balances": [],
+            "debts": [],
+            "id": "fa2cce3f-ec1f-44da-856a-3cf077b8a4c6",
+            "needs": [],
+            "net_monthly_income": 0,
+            "password": "$pbkdf2-sha256$29000$pzRmrJVSKoXwXotRqjXmHA$da54awvrFUcnFUIP2YpXexxu7OLnr9n7Md5JPCQSVSQ",
+            "username": "a"
+        },
+        "3": {
+            "balances": [],
+            "debts": [],
+            "id": "814f3a18-0f96-4953-9430-09c38dcd3695",
+            "needs": [],
+            "net_monthly_income": 0,
+            "password": "$pbkdf2-sha256$29000$43yPsRZiTAmhdI4xZszZOw$YiaEvOinuUv2GWKnVIr.XbJwj5ymKeB7cweo.z9F7TI",
+            "username": "b"
         }
     }
 }

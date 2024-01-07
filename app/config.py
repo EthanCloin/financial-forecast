@@ -28,7 +28,7 @@ class Settings(BaseSettings):
 
     DISABLE_DOCS: bool = False
 
-    logging.basicConfig(filename=LOG_FILE, level="DEBUG")
+    logging.basicConfig(filename=LOG_FILE, level="WARNING")
 
     @property
     def fastapi_kwargs(self) -> dict[str, Any]:
