@@ -1,12 +1,11 @@
 {% extends "/shared/_base.html" %} {% block content %}
-<div class="flex flex-col h-full max-w-screen-lg bg-slate-50">
+<div id="parent-wrapper" class="flex flex-col h-full max-w-screen-lg bg-slate-50">
   <h1 class="self-center text-3xl font-bold">You're Logged In!</h1>
   <p class="text-xl">Let's make sure everything looks right.</p>
-  <!-- we have users.balances,debts,needs,net_monthly_income -->
+  <!-- TODO: clean the styling up and decide what should actually be displayed here. -->
   <div class="flex flex-col w-max">
     <p
-      class="self-center w-10/12 p-3 my-3 overflow-auto text-xl font-bold text-center rounded-lg bg-slate-50 min-h-1/3"
-    >
+      class="self-center w-10/12 p-3 my-3 overflow-auto text-xl font-bold text-center rounded-lg bg-slate-50 min-h-1/3">
       Personal Finances for {{username.title()}}
     </p>
     <p class="self-center w-screen h-12 text-xl text-black">
@@ -16,6 +15,10 @@
       Your session id is {{session_id}}
     </p>
     <a href="/net-worth">Get Started</a>
+
+    <button id="logout-btn" class="self-center w-1/2 text-center md:w-1/3 mt-7 text-md" hx-post="/auth/logout"
+      hx-target="#parent-wrapper" hx-replace-url="/auth/login" hx-swap="outerHTML">
+      Log Out</button>
   </div>
-  {% endblock %}
 </div>
+{% endblock %}

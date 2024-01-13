@@ -4,27 +4,20 @@
 <h1 class="h-12 mt-8 text-3xl font-bold text-center text-green-700">
   Welcome Back
 </h1>
-<form action="/login" method="post" class="flex flex-col items-center justify-center w-screen h-full my-8">
+<!-- TODO: instead of reloading whole page on bad registration, reload just the form html using htmx -->
+<form action="/auth/login" method="post" class="flex flex-col items-center justify-center w-screen h-full my-8">
   {% if popup_text and username %}
-  <!-- display warning -->
-  <div
-    class="flex flex-row justify-between w-1/2 h-16 p-2 m-2 align-middle border rounded-md lg:w-1/3 bg-slate-200 border-slate-400">
-    <p class="self-center w-1/2 text-4xl text-center text-yellow-500 lg:w-1/3">&#9888</p>
-    <p class="self-center w-full text-sm italic text-left text-black">{{popup_text}}</p>
-  </div>
+  {% include 'fragments/invalid-popup.html' %}
   {% endif %}
 
-  {% if status == "bad_username" %}
+  {% if status == "bad_auth" %}
   <input required name="username" value="{{username if username else ''}}" type="text" placeholder="your@email.com"
     autocomplete="username" class="w-1/2 h-12 p-2 border lg:w-1/3 border-rose-600 focus:outline-rose-400" />
-  {% else %}
-  <input required name="username" value="{{username if username else ''}}" type="text" placeholder="your@email.com"
-    autocomplete="username" class="w-1/2 h-12 p-2 border lg:w-1/3 border-lime-900 focus:outline-lime-500" />
-  {% endif %}
-  {% if status == "bad_password" %}
   <input required id="password" name="password" type="password" placeholder="password" autocomplete="current-password"
     class="w-1/2 h-12 p-2 mb-6 border lg:w-1/3 border-rose-600 focus:outline-rose-400" />
   {% else %}
+  <input required name="username" value="{{username if username else ''}}" type="text" placeholder="your@email.com"
+    autocomplete="username" class="w-1/2 h-12 p-2 border lg:w-1/3 border-lime-900 focus:outline-lime-500" />
   <input required name="password" type="password" placeholder="password" autocomplete="current-password"
     class="w-1/2 h-12 p-2 border lg:w-1/3 border-lime-900 focus:outline-lime-500" />
   {% endif %}
@@ -32,10 +25,11 @@
     class="self-center w-1/2 h-12 mt-6 text-xl text-center text-white bg-green-700 border rounded-lg lg:w-1/3 border-lime-900 hover:bg-green-600">
     Login
   </button>
+
   <p class="self-center w-1/2 text-center lg:w-1/3 mt-7 text-md">
     New to Financial Forecast?
   </p>
-  <a href="/register" class="self-center w-1/2 italic text-center text-green-800 lg:w-1/3 text-md">Register a new
+  <a href="/auth/register" class="self-center w-1/2 italic text-center text-green-800 lg:w-1/3 text-md">Register a new
     account!</a>
 </form>
 {% endblock %}

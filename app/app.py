@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from config import Settings
-from routes import router
+from routes import auth, root
 
 settings = Settings()
 
@@ -15,7 +15,8 @@ def get_app() -> FastAPI:
 
     app = FastAPI(**settings.fastapi_kwargs)
     app.mount("/static", StaticFiles(directory=settings.STATIC_DIR), name="static")
-    app.include_router(router)
+    app.include_router(root.router)
+    app.include_router(auth.router)
     return app
 
 

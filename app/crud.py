@@ -1,11 +1,10 @@
 from db_models import User, Session
 from tinydb import Query, TinyDB
 from config import Settings
-from uuid import uuid4
 import logging
 
 _log = logging.getLogger(__name__)
-
+_log.setLevel("DEBUG")
 settings = Settings()
 
 
@@ -47,6 +46,13 @@ class CRUD:
         _log.debug("Inserting new session %s", session.model_dump())
         sessions.insert(session.model_dump())
         return session
+
+    def delete_session(self, session_id) -> None:
+        if not self.db:
+            self.init_db
+        session = self.db.table("sessions")
+        removed = session.remove(Query().session_id == session_id)
+        _log.debug("Removed %d session(s)", len(removed))
 
     def get_user_from_session(self, session_id) -> User | None:
         if not self.db:
