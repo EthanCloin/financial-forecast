@@ -12,6 +12,7 @@ _log.setLevel("DEBUG")
 TWO_DAYS = 3600 * 24 * 2
 
 
+# TODO: incorporate email verification for username
 @router.post("/register")
 async def register(request: Request):
     """
@@ -46,7 +47,7 @@ async def register(request: Request):
             {
                 "request": request,
                 "username": username,
-                "status": "bad_password",
+                "status": "bad_auth",
                 "popup_text": "Must provide a valid password!",
             },
         )
@@ -85,24 +86,17 @@ async def login(request: Request):
 
     db = CRUD()
     user = db.lookup_user(username)
-    if not user:
+    valid_password = (
+        security.verify_password(password, user.password) if user else False
+    )
+    if not user or not valid_password:
         return templates.TemplateResponse(
             "login.html",
             {
                 "request": request,
-                "status": "bad_username",
+                "status": "bad_auth",
                 "username": username,
-                "popup_text": "This username doesn't exist!",
-            },
-        )
-    if not security.verify_password(password, user.password):
-        return templates.TemplateResponse(
-            "login.html",
-            {
-                "request": request,
-                "status": "bad_password",
-                "username": username,
-                "popup_text": "Your password is not correct, try again!",
+                "popup_text": "Invalid username/password!",
             },
         )
 
