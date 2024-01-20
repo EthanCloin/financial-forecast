@@ -37,13 +37,21 @@ class CRUD:
         users.insert(user.model_dump())
         return user
 
-    def update_user_balances(self, user_id, balances):
+    def update_user_balances(self, user_id, balances: list[dict]):
         if not self.db:
             self.init_db
 
         users: Table = self.db.table("users")
-        res = users.update({"balances": balances}, Query().id == user_id)
-        print("")
+        _log.debug("Updating user balances: %s", balances)
+        users.update({"balances": balances}, Query().id == user_id)
+
+    def update_user_income(self, user_id, income: int):
+        if not self.db:
+            self.init_db
+
+        users: Table = self.db.table("users")
+        _log.debug("Updating user income: %s", income)
+        users.update({"net_monthly_income": income}, Query().id == user_id)
 
     def create_session(self, user_id) -> Session:
         if not self.db:
