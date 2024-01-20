@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Request, status, Depends
+from fastapi import APIRouter, HTTPException, Request, status, Depends
 from fastapi.responses import JSONResponse, RedirectResponse
 from models import RecoveryPlanRequest, RecoveryPlanResponse
 from crud import CRUD
-from .dependencies import cookie_scheme, templates
+from .dependencies import cookie_scheme, templates, dollars_to_cents
 import logging
 
 
@@ -34,6 +34,31 @@ async def user_profile(request: Request, session_id: str = Depends(cookie_scheme
             "session_id": session_id,
         },
     )
+
+
+@router.get("/balances")
+def balances_page(request: Request, session_id: str = Depends(cookie_scheme)):
+    if not session_id:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED)
+
+    return templates.TemplateResponse("balances.html", {"request": request})
+
+
+@router.post("/balances")
+async def balances(request: Request, session_id: str = Depends(cookie_scheme)):
+    if not session_id:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED)
+
+    # grab values from the form
+    form = await request.form()
+    checking = dollars_to_cents(form.get("checking"))
+    saving = dollars_to_cents(form.get("saving"))
+    investments = dollars_to_cents(form.get("investments"))
+
+    # insert to db
+
+    # redirect to next page
+    return RedirectResponse("/me", status.HTTP_302_FOUND)
 
 
 @router.post(
