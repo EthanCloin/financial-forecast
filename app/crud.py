@@ -1,5 +1,6 @@
 from db_models import User, Session
 from tinydb import Query, TinyDB
+from tinydb.table import Table
 from config import Settings
 import logging
 
@@ -35,6 +36,14 @@ class CRUD:
         users = self.db.table("users")
         users.insert(user.model_dump())
         return user
+
+    def update_user_balances(self, user_id, balances):
+        if not self.db:
+            self.init_db
+
+        users: Table = self.db.table("users")
+        res = users.update({"balances": balances}, Query().id == user_id)
+        print("")
 
     def create_session(self, user_id) -> Session:
         if not self.db:
