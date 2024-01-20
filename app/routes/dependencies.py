@@ -11,5 +11,5 @@ cookie_scheme = APIKeyCookie(name="session")
 
 
 def dollars_to_cents(currency: str) -> int:
-    cent_string = currency.replace("$", "").replace(".", "").strip()
+    cent_string = currency.replace("$", "").replace(",", "").replace(".", "").strip()
     return int(cent_string)
