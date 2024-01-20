@@ -53,6 +53,14 @@ class CRUD:
         _log.debug("Updating user income: %s", income)
         users.update({"net_monthly_income": income}, Query().id == user_id)
 
+    def update_user_needs(self, user_id, needs: list[dict]):
+        if not self.db:
+            self.init_db
+
+        users: Table = self.db.table("users")
+        _log.debug("Updating user needs: %s", needs)
+        users.update({"needs": needs}, Query().id == user_id)
+
     def create_session(self, user_id) -> Session:
         if not self.db:
             self.init_db

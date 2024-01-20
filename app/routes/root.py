@@ -92,7 +92,34 @@ async def income(request: Request, session_id: str = Depends(cookie_scheme)):
     db.update_user_income(user_id, income)
 
     # redirect to next page
-    # return RedirectResponse("/me", status.HTTP_302_FOUND)
+    return RedirectResponse("/spending", status.HTTP_302_FOUND)
+
+
+@router.get("/spending")
+def spending_page(request: Request, session_id: str = Depends(cookie_scheme)):
+    if not session_id:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED)
+
+    return templates.TemplateResponse("spending.html", {"request": request})
+
+
+@router.post("/spending")
+async def spending(request: Request, session_id: str = Depends(cookie_scheme)):
+    if not session_id:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED)
+
+    # grab values from the form
+    form = await request.form()
+    spending = dollars_to_cents(form.get("spending"))
+    needs = [{"name": "total", "amount": spending}]
+
+    # insert to db
+    db = CRUD()
+    user_id = db.get_user_from_session(session_id).id
+    db.update_user_needs(user_id, needs)
+
+    # redirect to next page
+    # return RedirectResponse("/spending", status.HTTP_302_FOUND)
 
 
 @router.post(
