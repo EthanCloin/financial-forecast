@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Request, status, Depends
 from fastapi.responses import JSONResponse, RedirectResponse
 from models import RecoveryPlanRequest, RecoveryPlanResponse
 from crud import CRUD
-from .dependencies import cookie_scheme, templates, dollars_to_cents
+from .dependencies import cookie_scheme, templates, dollars_to_cents, cents_to_dollars
 import logging
 
 
@@ -27,12 +27,7 @@ async def user_profile(request: Request, session_id: str = Depends(cookie_scheme
 
     return templates.TemplateResponse(
         "profile.html",
-        {
-            "request": request,
-            "username": current_user.username,
-            "password": current_user.password,
-            "session_id": session_id,
-        },
+        {"request": request, "user": current_user, "formatter": cents_to_dollars},
     )
 
 
