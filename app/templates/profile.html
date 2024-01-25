@@ -1,24 +1,65 @@
-{% extends "/shared/_base.html" %} {% block content %}
-<div id="parent-wrapper" class="flex flex-col h-full max-w-screen-lg bg-slate-50">
-  <h1 class="self-center text-3xl font-bold">You're Logged In!</h1>
-  <p class="text-xl">Let's make sure everything looks right.</p>
-  <!-- TODO: clean the styling up and decide what should actually be displayed here. -->
-  <div class="flex flex-col w-max">
-    <p
-      class="self-center w-10/12 p-3 my-3 overflow-auto text-xl font-bold text-center rounded-lg bg-slate-50 min-h-1/3">
-      Personal Finances for {{username.title()}}
-    </p>
-    <p class="self-center w-screen h-12 text-xl text-black">
-      Your secretized password is {{password}}
-    </p>
-    <p class="self-center w-screen h-12 text-xl text-black">
-      Your session id is {{session_id}}
-    </p>
-    <a href="/net-worth">Get Started</a>
+{% extends "/shared/_with_nav.html" %}
+{% block title %}Profile{% endblock %}
+{% block content %}
+<div id="parent-wrapper">
+  <h1 class="h-12 mt-8 text-3xl font-bold text-center text-green-700">Welcome, {{user.username.lower()}}</h1>
+  <div class="flex">
+    <div id="left-gap" class="hidden w-1/3 md:block lg:w-1/2"></div>
+    <div class="flex flex-col items-center w-full h-full px-3">
+      <!-- Banking Card -->
+      <section class="w-full p-5 pb-3 m-3 bg-white shadow-md" id="banking">
+        <p class="mb-3 text-2xl text-green-700 ">Banking</p>
+        {% for acct in user.balances %}
+        <div class="flex flex-row">
+          <p class="w-1/3 px-2 text-lg font-semibold text-black">{{acct.name.title()}}:</p>
+          <p class="px-2 ml-auto text-lg text-black w-fit ">{{formatter(acct.balance)}}</p>
+        </div>
+        {% endfor %}
+      </section>
+      <!-- CashFlow Card -->
+      <section class="w-full p-5 pb-3 m-3 mt-5 bg-white shadow-md" id="cash-flow">
+        <p class="mb-3 text-2xl text-green-700 ">Cash Flow</p>
+        <div class="flex flex-row">
+          <p class="px-2 text-lg font-semibold text-black">Monthly Income:</p>
+          <p class="px-2 ml-auto text-lg text-black w-fit ">{{formatter(user.net_monthly_income)}}</p>
+        </div>
+        <!-- TODO: detail version will need to loop thru multiple needs-->
+        <div class="flex flex-row">
+          <p class="px-2 text-lg font-semibold text-black ">Monthly Needs:</p>
+          <p class="px-2 ml-auto text-lg text-black w-fit ">{{formatter(user.needs[0].amount)}}</p>
+        </div>
+      </section>
+      <!-- Debts Card -->
+      <section class="w-full p-5 pb-3 m-3 bg-white shadow-md" id="debts">
+        <p class="mb-3 text-2xl text-green-700">Debts</p>
+        <!-- <div class="flex flex-row justify-around">
+          <p class="w-1/3 text-lg font-semibold text-black ">Monthly Minimum</p>
+          <p class="text-lg font-semibold text-black w-fit">Balance</p>
+        </div> -->
+        <table class="w-full">
+          <tr class="p-1">
+            <th class="text-lg font-semibold text-left text-black">Name</th>
+            <th class="text-lg font-semibold text-right text-black">Monthly Minimum</th>
+            <th class="text-lg font-semibold text-right text-black">Balance</th>
+          </tr>
+          {% for d in user.debts %}
+          <tr class="p-1">
+            <td class="text-lg font-semibold text-black">{{d.name.title()}}</td>
+            <td class="px-2 text-lg text-right text-black">{{formatter(d.min_monthly)}}</td>
+            <td class="text-lg text-right text-black">{{formatter(d.balance)}}</td>
+          </tr>
+        </table>
+        {% endfor %}
+      </section>
 
-    <button id="logout-btn" class="self-center w-1/2 text-center md:w-1/3 mt-7 text-md" hx-post="/auth/logout"
-      hx-target="#parent-wrapper" hx-replace-url="/auth/login" hx-swap="outerHTML">
-      Log Out</button>
+      <button id="logout-btn"
+        class="w-full h-10 mt-6 text-xl text-center text-white bg-orange-800 border border-orange-900 rounded-sm hover:bg-orange-600"
+        hx-post="/auth/logout" hx-target="#parent-wrapper" hx-replace-url="/auth/login" hx-swap="outerHTML">
+        Log Out</button>
+    </div>
+    <div id="right-gap" class="hidden w-1/3 md:block lg:w-1/2"></div>
+    <div class="flex flex-col w-max">
+
+    </div>
   </div>
-</div>
-{% endblock %}
+  {% endblock %}
